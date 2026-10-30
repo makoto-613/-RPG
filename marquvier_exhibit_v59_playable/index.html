@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>マルクヴィエ物語 | 展示版 v5.5</title><style>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>マルクヴィエ物語 | 展示版 v5.9</title><style>
 :root{--gold:#d7b978;--ink:#f3eee3;--muted:#b8b7bb;--panel:#14232eea}*{box-sizing:border-box}body{margin:0;background:#0b121b;color:var(--ink);font-family:"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}button{font:inherit;cursor:pointer;min-height:42px;background:#26394b;color:var(--ink);border:1px solid #79838c;border-radius:7px;padding:10px 14px}button:hover:not(:disabled){background:#3b5368}button:disabled{opacity:.36;cursor:not-allowed}.primary{background:#80653c;border-color:#d7bc80}.app{max-width:1100px;margin:auto;padding:15px;display:grid;gap:12px}.top,.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.brand{font-family:serif;font-size:24px;letter-spacing:.11em}.tiny{font-size:12px;color:var(--muted)}.scene{border:2px solid #817259;min-height:420px;border-radius:12px;overflow:hidden;position:relative;background:#152333;isolation:isolate}.scene:before{content:"";position:absolute;inset:0;z-index:-2;background-image:linear-gradient(#07101c45,#040a13a9),var(--bg);background-repeat:no-repeat;background-size:cover;background-position:center;image-rendering:pixelated}.scene:after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at center,transparent 10%,#08101ed1 100%)}.sceneHead{padding:18px;display:flex;justify-content:space-between;font-size:14px;color:#edd7a6}.art{height:210px;display:flex;justify-content:center;align-items:flex-end;gap:15%;padding:0 15px 8px}.portrait{width:96px;height:112px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 6px 4px #000)}.sceneIcon{max-height:145px;max-width:170px;object-fit:contain;filter:drop-shadow(0 8px 10px #000);image-rendering:pixelated}.dialog{background:var(--panel);margin:0 16px 16px;border:2px solid #69768a;border-radius:9px;padding:16px 19px;min-height:118px;box-shadow:0 5px 30px #050a13aa;background-image:linear-gradient(#10202de8,#10202de8),url('assets/dialog_frame.png');background-size:cover}.speaker{font-weight:bold;color:#e9c88a;margin-bottom:8px}.line{white-space:pre-wrap;line-height:1.85;font-size:16px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choices button{text-align:left;line-height:1.5}.choices button:first-child:last-child{grid-column:1/-1}.stat{flex:1;min-width:130px;background:#192a37;border:1px solid #435b6b;border-radius:8px;padding:9px 12px}.bar{height:7px;background:#364450;border-radius:9px;margin-top:6px;overflow:hidden}.fill{height:100%;background:#82b6a9}.danger{background:#c27a73}.warning{color:#e9a88b}.footer{font-size:11px;color:#93a4b3;text-align:center}.overlay{position:fixed;inset:0;background:#04080bdf;z-index:10;display:flex;justify-content:center;align-items:center;padding:15px}.modal{width:min(610px,96vw);max-height:90dvh;overflow:auto;background:#162633;border:2px solid #a58e69;border-radius:14px;padding:25px;box-shadow:0 20px 70px #000b}.modal h1,.modal h2{font-family:serif}.modal p{line-height:1.8;color:#d2d1d0}.modal .buttons{display:grid;gap:10px;margin-top:17px}.hidden{display:none!important}.combat{display:grid;grid-template-columns:minmax(250px,1fr) 285px;gap:12px;background:#0c1c27e9;border:1px solid #53677c;border-radius:9px;padding:12px;margin:0 16px 16px}.gridbattle{display:grid;grid-template-columns:repeat(7,1fr);aspect-ratio:1;gap:2px;max-width:390px;margin:auto;width:100%;background:#0e1822;padding:5px}.tile{aspect-ratio:1;background:#384452;border:1px solid #53606c;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,2vw,22px);padding:0;min-height:0}.tile.floor{background:#394652}.tile.wall{background:#151c23}.tile.reachable{background:#435d4e}.tile.enemy{background:#803f42}.tile.runo{background:#41638c}.tile.flamet{background:#48796c}.battleBtns{display:grid;gap:6px}.battleBtns button{font-size:13px;padding:7px;min-height:34px}.combatInfo{font-size:12px;line-height:1.7;color:#d4dce5}.log{font-size:12px;line-height:1.7;max-height:85px;overflow:auto;color:#d4caab;margin-top:8px}.endcard{padding:20px;background:#10212cd9;border-radius:12px;margin:12px 0;line-height:1.9}.timer{font-size:22px;font-variant-numeric:tabular-nums;font-weight:bold;color:#f2d79f}.timer.warn{color:#f3a58a}@media(max-width:650px){.app{padding:9px}.brand{font-size:18px}.scene{min-height:340px}.art{height:135px}.portrait{width:70px;height:85px}.sceneIcon{max-width:90px;max-height:95px}.dialog{margin:0 8px 9px;padding:12px;min-height:110px}.line{font-size:14px}.choices{grid-template-columns:1fr}.combat{grid-template-columns:1fr;margin:0 8px 8px}.gridbattle{max-width:300px}.battleBtns{grid-template-columns:1fr 1fr}.modal{padding:17px}.stat{min-width:100px}.top button{min-height:34px;padding:7px}}
 .tile:focus-visible,button:focus-visible{outline:3px solid #f5d58d;outline-offset:2px}.combatInfo b{color:#efd5a4}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important}}
 /* v4.2: display-first, viewport-bound layout */
@@ -127,7 +127,6 @@ html,body{height:100dvh!important;overflow:hidden!important}
 }
 
 /* v5.5 correct choice visibility and remove scrolling log */
-#choices{max-height:none!important;height:auto!important}#storyPanel{justify-content:flex-start!important}
 .rightPanel{grid-template-rows:minmax(0,2.5fr) minmax(100px,.8fr)!important}
 .app.in-battle .rightPanel{grid-template-rows:minmax(0,3fr) minmax(92px,.65fr)!important}
 #storyPanel{min-height:0!important;overflow:hidden!important}
@@ -154,19 +153,167 @@ html,body{height:100dvh!important;overflow:hidden!important}
  #sideLog{font-size:9px!important}
  #logPanel .panelTitle{margin-bottom:2px}
 }
-</style></head><body><main class="app"><header class="top"><div><div class="brand">マルクヴィエ物語 <span class="tiny">展示版 v5.5</span></div><div class="tiny" id="progress">少年と灰白のハスキーの物語</div></div><div><button id="pauseBtn">一時停止</button> <button id="titleBtn">タイトル</button></div></header><section class="gameShell"><section id="scene" class="scene" style="--bg:url('assets/bg_intro.jpg')"><div class="sceneHead"><span><span id="stage">序章</span><span id="chapterMood"></span></span><span id="items">水晶：未所持</span></div><div id="art" class="art"><img class="portrait" src="assets/portrait_runo_full.png" alt="ルノ"><img class="portrait" src="assets/portrait_flamet_full.png" alt="フラメト"></div><div id="combat" class="combat hidden"></div></section><aside class="rightPanel"><section id="storyPanel" class="sideCard"><div class="panelTitle">会話・選択</div><button id="nextDialog" class="primary nextDialog hidden" type="button">次の会話へ ▶</button><div id="dialogPages" class="dialogPages" aria-live="polite"></div><div id="choices" class="choices"></div><div class="tiny sideHint" id="hint">右の選択肢をクリックして進めてください。</div></section><section id="battlePanel" class="sideCard hidden"><div class="panelTitle">戦闘コマンド</div><div class="tiny emptyPanel">戦闘時にコマンドが表示されます。</div></section><section id="logPanel" class="sideCard"><div class="panelTitle">ログ</div><div id="sideLog" class="sideLog">ここに状況ログが表示されます。</div></section></aside></section><section class="bottomBar"><div class="hudDock"><div class="stat statTimer">残り時間 <span id="timer" class="timer">20:00</span></div><div class="stat">ルノ HP <b id="rhp">25/25</b><div class="bar"><div class="fill" id="rhpb"></div></div></div><div class="stat">フラメト HP <b id="fhp">35/35</b><div class="bar"><div class="fill" id="fhpb"></div></div></div><div class="stat">カルマ <b id="karma">0</b><div class="bar"><div class="fill" id="kb" style="background:#c4a26b"></div></div></div><div class="stat">不安 <b id="anxiety">0</b><div class="bar"><div class="fill danger" id="ab"></div></div></div></div><div class="dialogDock"><div id="speakerPortraitWrap" class="speakerPortraitWrap hidden"><img id="speakerPortrait" class="speakerPortrait" alt=""></div><div class="dialogWrap"><div class="dialogMeta"><div class="speaker" id="speaker">語り</div><div id="expressionTag" aria-live="off"></div><div class="tiny" id="dialogMode">会話・説明</div></div><div class="dialog"><div class="line" id="line">少年ルノと相棒フラメトの物語。</div></div></div></div></section><footer class="footer">提供されたUI・ドット絵素材を使用 / 自動保存 / 展示向け固定レイアウト</footer></main><div id="overlay" class="overlay"><div class="modal"><h1 id="modalTitle">マルクヴィエ物語</h1><div id="modalText"></div><div id="modalButtons" class="buttons"></div></div></div><script>
+
+/* v5.6: compact explanation area + analog day-night clock */
+.gameShell{grid-template-columns:minmax(0,1fr) 360px!important;gap:10px!important;flex:1 1 auto}
+.scene{position:relative;overflow:hidden}
+.analogClock{position:absolute;left:16px;top:60px;width:118px;height:118px;z-index:4;pointer-events:none;filter:drop-shadow(0 8px 16px rgba(0,0,0,.45))}
+.clockFace{position:relative;width:100%;height:100%;border-radius:50%;border:2px solid #c7ab71;background:conic-gradient(from -135deg,#f5d98e 0deg 105deg,#d8eefb 105deg 180deg,#5b7bb0 180deg 270deg,#23365b 270deg 360deg);box-shadow:inset 0 0 0 4px rgba(6,16,28,.55),0 10px 24px rgba(0,0,0,.35)}
+.clockShade{position:absolute;inset:6px;border-radius:50%;background:conic-gradient(from -135deg,rgba(255,237,190,.05) 0deg,rgba(255,237,190,.05) var(--progress,0deg),rgba(7,14,26,.55) var(--progress,0deg),rgba(7,14,26,.55) 360deg)}
+.clockHand{position:absolute;left:50%;top:50%;width:4px;height:38px;border-radius:999px;background:linear-gradient(180deg,#fff8e0 0%,#f2c969 48%,#47321a 100%);transform:translate(-50%,-82%) rotate(-135deg);transform-origin:50% 88%;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.clockCenter{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);border-radius:50%;background:#f2d08a;border:2px solid #604626;z-index:2}
+.clockInner{position:absolute;inset:24px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.18),rgba(20,30,46,.88));display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);text-align:center;padding-top:6px}
+.clockCaption{font-size:10px;letter-spacing:.12em;color:#e9dbbb;line-height:1}
+.clockTime{font-variant-numeric:tabular-nums;font-weight:700;font-size:18px;color:#fff6dc;line-height:1.1;margin-top:3px}
+.clockWarn .clockTime{color:#ffb199}
+.clockHalfLabel{position:absolute;font-size:11px;font-weight:700;letter-spacing:.08em;color:#122131;background:rgba(244,236,214,.82);padding:1px 7px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.clockHalfLabel.morning{left:8px;top:10px}
+.clockHalfLabel.night{right:10px;bottom:10px;background:rgba(28,45,74,.88);color:#f2f4ff}
+.bottomBar{grid-template-columns:300px minmax(0,1fr)!important;gap:10px!important;max-height:185px!important}
+.hudDock{grid-template-columns:1fr 1fr!important;grid-auto-rows:minmax(0,1fr)!important;gap:8px!important}
+.hudDock .stat{padding:9px 10px!important;font-size:13px!important;border-radius:14px!important}
+.hudDock .stat b{font-size:16px!important}
+.dialogDock{padding:10px 12px!important;grid-template-columns:120px minmax(0,1fr)!important;gap:10px!important;border-radius:16px!important;min-height:160px!important;max-height:185px!important}
+.speakerPortraitWrap{border-radius:12px!important}
+.dialogWrap{gap:6px!important}
+.dialogMeta{min-height:20px!important}
+.dialog{padding:12px 14px!important;border-radius:12px!important;overflow:auto!important}
+.line{font-size:16px!important;line-height:1.65!important}
+@media(max-height:820px){
+  .analogClock{width:100px;height:100px;top:58px}
+  .bottomBar{max-height:170px!important}
+  .dialogDock{min-height:145px!important;max-height:170px!important;grid-template-columns:96px minmax(0,1fr)!important}
+  .line{font-size:15px!important;line-height:1.58!important}
+  .hudDock .stat{padding:7px 9px!important;font-size:12px!important}
+}
+@media(max-width:900px){
+  .analogClock{width:90px;height:90px;top:56px;left:12px}
+  .clockTime{font-size:15px}
+  .bottomBar{grid-template-columns:240px minmax(0,1fr)!important;max-height:170px!important}
+  .dialogDock{grid-template-columns:82px minmax(0,1fr)!important;min-height:136px!important}
+  .line{font-size:14px!important}
+}
+
+/* v5.7 — use entire available screen, fixed viewport, no page scrolling */
+:root{--header-height:66px;--bottom-height:138px;--ui-gap:8px}
+html,body{margin:0!important;padding:0!important;width:100%!important;height:100%!important;height:100dvh!important;overflow:hidden!important}
+body{background:#06101b!important}
+.app{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) 138px!important;gap:var(--ui-gap)!important;width:100%!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;min-height:0!important;margin:0!important;padding:8px 10px!important;overflow:hidden!important}
+.app>.top{min-height:0!important;height:52px!important;padding:0 6px!important;align-items:center!important}
+.app>.top .brand{font-size:clamp(19px,2vw,27px)!important}
+.app>.top .tiny{font-size:12px!important}
+.gameShell{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(345px,25%)!important;grid-template-rows:minmax(0,1fr)!important;gap:var(--ui-gap)!important;width:100%!important;min-height:0!important;height:100%!important;overflow:hidden!important}
+.gameShell .scene{min-height:0!important;height:100%!important;overflow:hidden!important;flex:1 1 auto!important}
+.sceneHead{flex-shrink:0!important}
+.gameShell>.rightPanel{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,3.5fr) minmax(0,1fr)!important;gap:var(--ui-gap)!important;height:100%!important;min-height:0!important;overflow:hidden!important}
+.gameShell>.rightPanel>.sideCard{min-height:0!important;height:100%!important;overflow:hidden!important}
+.gameShell #storyPanel{display:flex!important;flex-direction:column!important;min-height:0!important}
+.gameShell #storyPanel.hidden{display:none!important}
+#choices{min-height:0!important;max-height:none!important;overflow-y:auto!important;flex:1 1 auto!important;scrollbar-width:thin}
+#choices button{padding:9px 10px!important;font-size:clamp(12px,.95vw,15px)!important;min-height:42px!important;line-height:1.45!important}
+#logPanel{min-height:0!important}
+#sideLog{min-height:0!important;overflow:hidden!important}
+.bottomBar{height:138px!important;min-height:0!important;max-height:138px!important;display:grid!important;grid-template-columns:290px minmax(0,1fr)!important;gap:var(--ui-gap)!important;overflow:hidden!important}
+.hudDock{height:100%!important;min-height:0!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:6px!important}
+.hudDock .stat{height:100%!important;min-height:0!important;min-width:0!important;padding:6px 9px!important;font-size:12px!important;line-height:1.3!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+.hudDock .stat b{font-size:16px!important}
+.hudDock .bar{display:block!important;height:6px!important;margin-top:5px!important}
+.dialogDock{width:100%!important;height:138px!important;min-height:0!important;max-height:138px!important;display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:10px!important;padding:9px 12px!important;overflow:hidden!important}
+.dialogDock>.speakerPortraitWrap{width:100px!important;max-width:100px!important;min-width:100px!important;height:100%!important;flex:none!important}
+.dialogDock>.speakerPortraitWrap.hidden{display:none!important}
+.dialogDock>.dialogWrap{width:auto!important;min-width:0!important;max-width:none!important;flex:1 1 0!important;height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+.dialogWrap>.dialogMeta{min-height:19px!important;flex:0 0 auto!important}
+.dialogWrap>.dialog{display:block!important;position:relative!important;width:100%!important;min-width:0!important;max-width:none!important;max-height:none!important;min-height:0!important;height:auto!important;flex:1 1 auto!important;overflow-y:auto!important;padding:8px 13px!important}
+.dialogWrap .line{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;white-space:pre-wrap!important;overflow-wrap:break-word!important;font-size:clamp(13px,1.05vw,16px)!important;line-height:1.65!important;max-height:none!important}
+.footer{display:none!important}
+.analogClock{left:16px!important;top:60px!important;width:118px!important;height:118px!important}
+.app.in-battle .scene{min-height:0!important}
+.app.in-battle .combat{flex:1 1 auto!important;min-height:0!important;height:100%!important;margin:8px 10px 10px!important;padding:8px!important;overflow:hidden!important}
+.app.in-battle .gridbattle{height:100%!important;max-height:100%!important;max-width:100%!important;width:auto!important;aspect-ratio:1!important}
+.app.in-battle #battlePanel{display:flex!important;overflow:hidden!important}
+.app.in-battle #battlePanel .battlePanelInner{min-height:0!important;overflow-y:auto!important;scrollbar-width:thin!important}
+@media(max-width:980px){
+ .gameShell{grid-template-columns:minmax(0,1fr) minmax(290px,33%)!important}
+ .bottomBar{grid-template-columns:230px minmax(0,1fr)!important}
+ .dialogDock>.speakerPortraitWrap{width:75px!important;min-width:75px!important;max-width:75px!important}
+}
+@media(max-width:650px){
+ .app{padding:5px!important;grid-template-rows:40px minmax(0,1fr) 140px!important;gap:5px!important}
+ .app>.top{height:40px!important}
+ .app>.top .brand{font-size:14px!important}
+ .app>.top .tiny{font-size:9px!important}
+ .gameShell{grid-template-columns:minmax(0,1fr) minmax(150px,41%)!important;gap:4px!important}
+ .gameShell>.rightPanel{grid-template-rows:minmax(0,4fr) minmax(0,1fr)!important;gap:4px!important}
+ .sideCard{padding:7px!important;border-radius:10px!important}
+ .panelTitle{font-size:11px!important;margin-bottom:5px!important}
+ #choices button{font-size:11px!important;min-height:34px!important;padding:5px 6px!important}
+ .bottomBar{grid-template-columns:120px minmax(0,1fr)!important;gap:4px!important;height:140px!important;max-height:140px!important}
+ .hudDock{gap:3px!important}
+ .hudDock .stat{padding:3px 4px!important;font-size:9px!important}
+ .hudDock .stat b{font-size:12px!important}
+ .hudDock .bar{height:4px!important}
+ .dialogDock{height:140px!important;max-height:140px!important;padding:5px!important;gap:4px!important}
+ .dialogDock>.speakerPortraitWrap{width:45px!important;min-width:45px!important;max-width:45px!important}
+ .dialogWrap>.dialog{padding:5px 7px!important}
+ .dialogWrap .line{font-size:11px!important;line-height:1.4!important}
+ .analogClock{left:6px!important;top:50px!important;width:80px!important;height:80px!important}
+ .clockTime{font-size:13px!important}
+}
+
+/* v5.8: readable explanation continuation and battle-log allocation */
+.dialogDock{position:relative!important}
+.dialogWrap>.dialog{padding-bottom:24px!important;scrollbar-width:thin!important;scrollbar-color:#dcb973 #283948!important}
+.dialogWrap>.dialog::-webkit-scrollbar{width:12px}
+.dialogWrap>.dialog::-webkit-scrollbar-track{background:#273744;border-radius:12px}
+.dialogWrap>.dialog::-webkit-scrollbar-thumb{background:#d3ad70;border:2px solid #273744;border-radius:12px}
+.readMore{position:absolute;right:24px;bottom:9px;z-index:5;padding:6px 13px!important;min-height:31px!important;border-radius:18px!important;background:#b18a4c!important;color:#101e2d!important;border:2px solid #f7d89a!important;box-shadow:0 0 0 3px #101d2de8,0 4px 14px #000b!important;font-size:13px!important;font-weight:700!important;line-height:1.2!important;animation:morePulse 1.7s ease-in-out infinite alternate}
+@keyframes morePulse{from{filter:brightness(1)}to{filter:brightness(1.18)}}
+@media(prefers-reduced-motion:reduce){.readMore{animation:none!important}}
+.app.in-battle .gameShell>.rightPanel{grid-template-rows:minmax(0,1.55fr) minmax(145px,1fr)!important}
+.app.in-battle #battlePanel{min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+.app.in-battle #battlePanel .panelTitle{flex:0 0 auto;margin-bottom:4px!important}
+.app.in-battle #battlePanel .battlePanelInner{min-height:0!important;flex:1 1 auto!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin}
+.app.in-battle .battleSide{overflow:visible!important;gap:4px!important;padding-bottom:4px}
+.app.in-battle .combatInfo,.app.in-battle .actionHelp{font-size:11px!important;line-height:1.3!important;padding:5px 8px!important}
+.app.in-battle .battleBtns{gap:4px!important}
+.app.in-battle .battleBtns button,.app.in-battle .battleSide .approach,.app.in-battle .battleSide .endturn,.app.in-battle .battleSide .retryBattle{min-height:31px!important;padding:5px 8px!important;font-size:12px!important;line-height:1.3!important}
+.app.in-battle #logPanel{padding:10px 12px!important;min-height:145px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+.app.in-battle #logPanel .panelTitle{font-size:14px!important;flex:0 0 auto!important;margin-bottom:7px!important}
+.app.in-battle #sideLog{display:flex!important;flex:1 1 auto!important;min-height:0!important;justify-content:space-around!important;gap:4px!important;padding:3px!important;overflow:hidden!important;font-size:13px!important;line-height:1.4!important}
+.app.in-battle #sideLog .logEntry{white-space:normal!important;overflow-wrap:anywhere!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2;font-size:13px!important;flex:0 1 auto!important;padding:3px 6px!important;border-left:3px solid #b89561!important;background:#182838!important;border-radius:3px!important}
+@media(max-height:720px){
+ .app.in-battle .gameShell>.rightPanel{grid-template-rows:minmax(0,1.8fr) minmax(110px,1fr)!important}
+ .app.in-battle #logPanel{min-height:110px!important;padding:6px 8px!important}
+ .app.in-battle #sideLog .logEntry{font-size:11px!important;line-height:1.25!important;-webkit-line-clamp:2}
+}
+@media(max-width:650px){
+ .readMore{right:9px!important;bottom:7px!important;font-size:10px!important;min-height:26px!important;padding:4px 7px!important}
+ .app.in-battle .gameShell>.rightPanel{grid-template-rows:minmax(0,1.65fr) minmax(120px,1fr)!important}
+ .app.in-battle #sideLog .logEntry{font-size:10px!important}
+}
+
+/* v5.9: battle character pixel art */
+.gridbattle .tile{position:relative;overflow:visible!important;isolation:isolate}
+.gridbattle .tile.runo,.gridbattle .tile.flamet,.gridbattle .tile.enemy{font-size:0!important}
+.gridbattle .battleSprite{position:relative;display:block;pointer-events:none;user-select:none;image-rendering:pixelated;object-fit:contain;object-position:center bottom;max-width:none;max-height:none;filter:drop-shadow(0 2px 2px #000a)}
+.gridbattle .battleSpriteHero{width:95%;height:115%}
+.gridbattle .battleSpriteEnemy{width:112%;height:112%}
+.gridbattle .tile.enemy.attackable{outline:3px solid #ffce69!important}
+.gridbattle .tile.runo{z-index:2}.gridbattle .tile.flamet{z-index:2}.gridbattle .tile.enemy{z-index:3}
+@media(max-width:650px){.gridbattle .battleSpriteHero{height:102%}.gridbattle .battleSpriteEnemy{width:112%;height:103%}}
+</style></head><body><main class="app"><header class="top"><div><div class="brand">マルクヴィエ物語 <span class="tiny">展示版 v5.9</span></div><div class="tiny" id="progress">少年と灰白のハスキーの物語</div></div><div><button id="pauseBtn">一時停止</button> <button id="titleBtn">タイトル</button></div></header><section class="gameShell"><section id="scene" class="scene" style="--bg:url('assets/bg_intro.jpg')"><div class="sceneHead"><span><span id="stage">序章</span><span id="chapterMood"></span></span><span id="items">水晶：未所持</span></div><div id="analogClock" class="analogClock" aria-label="残り時間 20分"><div id="clockFace" class="clockFace"><div class="clockHalfLabel morning">朝</div><div class="clockHalfLabel night">夜</div><div id="clockShade" class="clockShade"></div><div id="clockHand" class="clockHand"></div><div class="clockCenter"></div><div class="clockInner"><div class="clockCaption">残り</div><div id="clockTime" class="clockTime">20:00</div></div></div></div><div id="art" class="art"><img class="portrait" src="assets/portrait_runo_full.png" alt="ルノ"><img class="portrait" src="assets/portrait_flamet_full.png" alt="フラメト"></div><div id="combat" class="combat hidden"></div></section><aside class="rightPanel"><section id="storyPanel" class="sideCard"><div class="panelTitle">会話・選択</div><button id="nextDialog" class="primary nextDialog hidden" type="button">次の会話へ ▶</button><div id="dialogPages" class="dialogPages" aria-live="polite"></div><div id="choices" class="choices"></div><div class="tiny sideHint" id="hint">右の選択肢をクリックして進めてください。</div></section><section id="battlePanel" class="sideCard hidden"><div class="panelTitle">戦闘コマンド</div><div class="tiny emptyPanel">戦闘時にコマンドが表示されます。</div></section><section id="logPanel" class="sideCard"><div class="panelTitle">ログ</div><div id="sideLog" class="sideLog">ここに状況ログが表示されます。</div></section></aside></section><section class="bottomBar"><div class="hudDock"><div class="stat">ルノ HP <b id="rhp">25/25</b><div class="bar"><div class="fill" id="rhpb"></div></div></div><div class="stat">フラメト HP <b id="fhp">35/35</b><div class="bar"><div class="fill" id="fhpb"></div></div></div><div class="stat">カルマ <b id="karma">0</b><div class="bar"><div class="fill" id="kb" style="background:#c4a26b"></div></div></div><div class="stat">不安 <b id="anxiety">0</b><div class="bar"><div class="fill danger" id="ab"></div></div></div></div><div class="dialogDock"><div id="speakerPortraitWrap" class="speakerPortraitWrap hidden"><img id="speakerPortrait" class="speakerPortrait" alt=""></div><div class="dialogWrap"><div class="dialogMeta"><div class="speaker" id="speaker">語り</div><div id="expressionTag" aria-live="off"></div><div class="tiny" id="dialogMode">会話・説明</div></div><div class="dialog"><div class="line" id="line">少年ルノと相棒フラメトの物語。</div></div></div><button type="button" id="readMore" class="readMore hidden" aria-label="説明を下へ送る">▼ 下へ</button></div></section><footer class="footer">提供されたUI・ドット絵素材を使用 / 自動保存 / 展示向け固定レイアウト</footer></main><div id="overlay" class="overlay"><div class="modal"><h1 id="modalTitle">マルクヴィエ物語</h1><div id="modalText"></div><div id="modalButtons" class="buttons"></div></div></div><script>
 'use strict';
 const $=id=>document.getElementById(id), clamp=(n,min=0,max=100)=>Math.max(min,Math.min(max,n));
-const SAVE='marquvier_exhibit_v55', ZONE=['序章','廃坑入口・トロッコ','三叉路・水路','岩喰いムカデ','水晶洞','鉱夫の休憩所','崩落した通路','灯火の回廊','大空洞・トゲイモムシ','命の祭壇','帰り道'];
+const SAVE='marquvier_exhibit_v59', ZONE=['序章','廃坑入口・トロッコ','三叉路・水路','岩喰いムカデ','水晶洞','鉱夫の休憩所','崩落した通路','灯火の回廊','大空洞・トゲイモムシ','命の祭壇','帰り道'];
 const BG=['bg_intro.jpg','bg_mine_entry.jpg','bg_mine_inner.jpg','bg_mine_inner.jpg','bg_crystal.jpg','bg_mine_inner.jpg','bg_collapse.jpg','bg_mine_inner.jpg','bg_mine_inner.jpg','bg_altar.jpg','bg_altar.jpg'];
 const MOOD=['はじまり','出口を求めて','離れないで','足音が響く','光の選択','命の代償','傷つく相棒','光と影','闇の住処','祈りの重さ','最後の約束'];const ICON={1:'obj_トロッコ.png',4:'obj_水晶鉱石.png',9:'obj_命継ぎの石.png'};
 let s,interval=null,lastTick=Date.now(),modalOpen=true;
 function blank(){return {scene:0,step:0,karma:0,anxiety:5,hp:25,fhp:35,crystal:false,crystalUsed:false,cartFailed:false,mirrorA:false,mirrorB:false,mirrorTries:0,mirrorHint:false,lampSolved:false,lampTries:0,crystalJournal:false,endingHistory:[],introSkipped:false,battle:null,checkpoint:null,remaining:1200,short:false,ending:null,finalActions:0,attackedDog:false,stone:false,notes:[],lastSceneRendered:-1,paused:false,started:false,warn5:false,warn2:false,warn30:false,gameover:false};}
 function save(){try{localStorage.setItem(SAVE,JSON.stringify(s));}catch(e){}}
-function load(){try{let v=JSON.parse(localStorage.getItem(SAVE)||localStorage.getItem('marquvier_exhibit_v54')||localStorage.getItem('marquvier_exhibit_v53')||localStorage.getItem('marquvier_exhibit_v52')||localStorage.getItem('marquvier_exhibit_v51')||localStorage.getItem('marquvier_exhibit_v50')||localStorage.getItem('marquvier_exhibit_v49')||localStorage.getItem('marquvier_exhibit_v48')||localStorage.getItem('marquvier_exhibit_v43')||localStorage.getItem('marquvier_exhibit_v42'));if(v&&typeof v==='object'&&Number.isFinite(v.remaining))return {...blank(),...v,remaining:clamp(v.remaining,0,1200)}}catch(e){}return null}
+function load(){try{let v=JSON.parse(localStorage.getItem(SAVE)||localStorage.getItem('marquvier_exhibit_v58')||localStorage.getItem('marquvier_exhibit_v57')||localStorage.getItem('marquvier_exhibit_v56')||localStorage.getItem('marquvier_exhibit_v55')||localStorage.getItem('marquvier_exhibit_v54')||localStorage.getItem('marquvier_exhibit_v53')||localStorage.getItem('marquvier_exhibit_v52')||localStorage.getItem('marquvier_exhibit_v51')||localStorage.getItem('marquvier_exhibit_v50')||localStorage.getItem('marquvier_exhibit_v49')||localStorage.getItem('marquvier_exhibit_v48')||localStorage.getItem('marquvier_exhibit_v43')||localStorage.getItem('marquvier_exhibit_v42'));if(v&&typeof v==='object'&&Number.isFinite(v.remaining))return {...blank(),...v,remaining:clamp(v.remaining,0,1200)}}catch(e){}return null}
 function modal(title,txt,buttons){modalOpen=true;$('modalTitle').textContent=title;$('modalText').innerHTML=txt;$('modalButtons').replaceChildren();buttons.forEach(b=>{const el=document.createElement('button');el.textContent=b[0];el.className=b[2]?'primary':'';el.onclick=()=>{hideModal();b[1]()};$('modalButtons').append(el)});$('overlay').classList.remove('hidden')}
 function hideModal(){modalOpen=false;$('overlay').classList.add('hidden');lastTick=Date.now()}
-function updateHud(){let t=Math.max(0,Math.ceil(s.remaining));$('timer').textContent=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;$('timer').className='timer'+(t<=120?' warn':'');for(let [id,n,d] of [['rhp',s.hp,25],['fhp',s.fhp,35]])$(id).textContent=`${n}/${d}`;$('rhpb').style.width=`${s.hp/25*100}%`;$('fhpb').style.width=`${s.fhp/35*100}%`;$('karma').textContent=s.karma;$('anxiety').textContent=s.anxiety;$('kb').style.width=s.karma+'%';$('ab').style.width=s.anxiety+'%';$('items').textContent=s.crystal?'◆ 強く光る水晶のかけら':'水晶：未所持';$('progress').textContent=`${s.scene===0?'序章':`第${s.scene}区画 / 全10区画`}${s.short?' ・短縮ルート':''}`}
+function updateHud(){let t=Math.max(0,Math.ceil(s.remaining));const timeText=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;const elapsed=(1200-s.remaining)/1200;const ratio=Math.max(0,Math.min(1,elapsed));const handAngle=-135+ratio*270;const shade=Math.round(ratio*360);if($('clockTime'))$('clockTime').textContent=timeText;if($('analogClock')){$('analogClock').classList.toggle('clockWarn',t<=120);$('analogClock').setAttribute('aria-label',`残り時間 ${timeText}`)}if($('clockFace'))$('clockFace').style.setProperty('--progress',`${shade}deg`);if($('clockShade'))$('clockShade').style.setProperty('--progress',`${shade}deg`);if($('clockHand'))$('clockHand').style.transform=`translate(-50%,-82%) rotate(${handAngle}deg)`;for(let [id,n,d] of [['rhp',s.hp,25],['fhp',s.fhp,35]])$(id).textContent=`${n}/${d}`;$('rhpb').style.width=`${s.hp/25*100}%`;$('fhpb').style.width=`${s.fhp/35*100}%`;$('karma').textContent=s.karma;$('anxiety').textContent=s.anxiety;$('kb').style.width=s.karma+'%';$('ab').style.width=s.anxiety+'%';$('items').textContent=s.crystal?'◆ 強く光る水晶のかけら':'水晶：未所持';$('progress').textContent=`${s.scene===0?'序章':`第${s.scene}区画 / 全10区画`}${s.short?' ・短縮ルート':''}`}
 function change(k=0,a=0){s.karma=clamp(s.karma+k);s.anxiety=clamp(s.anxiety+a)}
 function choose(txt,fn,disabled=false,why=''){const b=document.createElement('button');b.textContent=txt+(disabled&&why?`（${why}）`:'');b.disabled=disabled;b.onclick=()=>{fn();save();render()};$('choices').append(b)}
 function setScene(n){s.scene=n;s.step=0;if(n===9)s.stone=false;save()}
@@ -186,12 +333,17 @@ const EMOTION_LABEL={neutral:'',sad:'沈痛',worried:'不安',alert:'緊張',res
 function syncEmotion(text){const emotion=expressionFor(text,dialogSpeaker);const scene=$('scene'),wrap=$('speakerPortraitWrap');for(const e of ['sad','worried','alert','resolute']){scene.classList.toggle('mood-'+e,emotion===e);wrap.classList.toggle('mood-'+e,emotion===e)}$('expressionTag').textContent=EMOTION_LABEL[emotion]||'';}
 function fitsDialog(text){const el=$('line'),box=el.closest('.dialog');if(!box)return true;el.textContent=text;const cs=getComputedStyle(box);const usable=box.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-2;return el.scrollHeight<=Math.max(1,usable-2)}
 function splitDialog(text){return [String(text||'')]}
-function applyDialogPage(){const more=dialogIndex<dialogPages.length-1;const displayed=dialogPages[dialogIndex]||'';$('line').textContent=displayed;$('nextDialog').classList.toggle('hidden',!more);$('dialogPages').textContent=dialogPages.length>1?`会話 ${dialogIndex+1} / ${dialogPages.length}`:'';$('choices').classList.toggle('dialogWaiting',more);syncEmotion(displayed);const box=$('line').closest('.dialog');if(box)box.scrollTop=0;}
+function applyDialogPage(){const more=dialogIndex<dialogPages.length-1;const displayed=dialogPages[dialogIndex]||'';$('line').textContent=displayed;$('nextDialog').classList.toggle('hidden',!more);$('dialogPages').textContent=dialogPages.length>1?`会話 ${dialogIndex+1} / ${dialogPages.length}`:'';$('choices').classList.toggle('dialogWaiting',more);syncEmotion(displayed);const box=$('line').closest('.dialog');if(box)box.scrollTop=0;scheduleReadMore();}
 function advanceDialog(){if(dialogIndex<dialogPages.length-1){dialogIndex++;applyDialogPage();}}
 function repaginateDialog(){if(!dialogOriginal)return;const old=dialogPages.slice(0,dialogIndex).join('');dialogPages=dialogSpeaker==='戦闘'?[dialogOriginal]:splitDialog(dialogOriginal);dialogIndex=Math.min(dialogPages.length-1,Math.max(0,dialogPages.findIndex((_,i)=>dialogPages.slice(0,i+1).join('').length>=old.length)));applyDialogPage()}
 function say(t,sp='語り'){dialogOriginal=String(t||'');dialogSpeaker=sp;dialogPages=sp==='戦闘'?[dialogOriginal]:splitDialog(dialogOriginal);dialogIndex=0;applyDialogPage();$('speaker').textContent=sp;syncSpeakerPortrait(sp);const art=$('art');art.classList.remove('focus-runo','focus-flamet');if(sp==='ルノ')art.classList.add('focus-runo');if(sp==='フラメト')art.classList.add('focus-flamet');if(!s?.battle)setSideLog(storyLogText());}
 let _layoutResize;
-window.addEventListener('resize',()=>{clearTimeout(_layoutResize);_layoutResize=setTimeout(repaginateDialog,140)});
+window.addEventListener('resize',()=>{clearTimeout(_layoutResize);_layoutResize=setTimeout(()=>{repaginateDialog();scheduleReadMore()},140)});
+
+function updateReadMore(){const box=$('line').closest('.dialog'),btn=$('readMore');if(!box||!btn)return;const more=box.scrollHeight-box.clientHeight-box.scrollTop>8;btn.classList.toggle('hidden',!more);btn.setAttribute('aria-hidden',String(!more));}
+function scheduleReadMore(){requestAnimationFrame(()=>requestAnimationFrame(updateReadMore));}
+$('readMore').addEventListener('click',()=>{const box=$('line').closest('.dialog');if(!box)return;box.scrollBy({top:Math.max(80,box.clientHeight*.8),behavior:'smooth'});setTimeout(updateReadMore,400);});
+$('line').closest('.dialog').addEventListener('scroll',updateReadMore,{passive:true});
 function dogMood(){return s.karma>=60?'フラメトはルノを見つめるが、すぐに目をそらして距離を取った。':s.karma>=50?'フラメトは少し離れて歩く。呼べば振り向くが、表情は硬い。':s.karma>=30?'フラメトは周囲を警戒しながら、ときおりルノを確かめるように見上げた。':'フラメトはルノに肩を寄せるように並び、しっぽを一度振った。'}
 function pressureMood(){return s.anxiety>=90?'息が浅い。手の震えが止まらない。':s.anxiety>=70?'頭が真っ白になり、かすかな物音にも肩が跳ねる。':s.anxiety>=50?'心臓の鼓動がやけに大きく聞こえる。':s.anxiety>=30?'薄暗い坑道の奥が気になって、何度も振り返る。':'ひと呼吸すると、足元の道が少しだけはっきり見えた。'}
 function sceneText(body){return body+'\n\n'+dogMood()+(s.anxiety>=50?'\n'+pressureMood():'')}
@@ -249,7 +401,7 @@ function retreatChoice(){
  const b=s.battle;
  if(!b||b.boss||!b.retreatPending)return;
  $('combat').classList.add('hidden');
- $('art').innerHTML='<img class="sceneIcon" src="assets/centipede_walk.png" alt="岩喰いムカデ">';
+ $('art').innerHTML='<img class="sceneIcon" src="assets/enemy_centipede_user.png" alt="岩喰いムカデ">';
  say('ムカデは弱り、岩の割れ目へ逃げようとしている。\nルノは杖を握りしめたまま、追うべきか迷った。\n\nどうする？','語り');
  $('choices').replaceChildren();
  choose('逃がす（カルマ変化なし）',()=>{
@@ -442,7 +594,16 @@ function battleRender(){
   else if(isEnemy){cell.className='tile enemy';mark='虫'}
   else if(moveCells.some(v=>v.x===x&&v.y===y)){cell.className='tile reachable'}
   if(isEnemy&&(staffOK||stoneOK))cell.classList.add('attackable');
-  cell.textContent=mark;
+  if(isR||isF||isEnemy){
+   const sprite=document.createElement('img');
+   sprite.className='battleSprite '+(isEnemy?'battleSpriteEnemy':'battleSpriteHero');
+   sprite.src='assets/'+(isR?'battle_runo.png':isF?'battle_flamet.png':b.boss?'enemy_spiky_user.png':'enemy_centipede_user.png');
+   sprite.alt=isR?'ルノ':isF?'フラメト':b.boss?'トゲイモムシ':'岩喰いムカデ';
+   sprite.draggable=false;
+   cell.append(sprite);
+  }else{
+   cell.textContent='';
+  }
   if(isEnemy){cell.title=(staffOK?'クリックで杖攻撃':stoneOK?'クリックで石弾攻撃':`敵まで${d}マス。${b.acted?'このターンは行動済みです':'射程を確認してください'}`);cell.setAttribute('aria-label',cell.title)}
   else if(isR)cell.title='ルノ（現在位置）';else if(isF)cell.title='フラメト';
   else if(moveCells.some(v=>v.x===x&&v.y===y))cell.title='移動できるマス';
