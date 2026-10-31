@@ -28,19 +28,25 @@
   /* ---------------- 台詞パネル ---------------- */
   const MS = { timer: null, full: '', done: true, res: null, i: 0 };
   function stopType() { if (MS.timer) { clearInterval(MS.timer); MS.timer = null; } }
-  function finishType() { stopType(); $('mtext').textContent = MS.full; MS.done = true; if (MS.res) $('nxt').hidden = false; }
+  function finishType() { stopType(); $('mtext').textContent = MS.full; keepBottom(); MS.done = true; if (MS.res) $('nxt').hidden = false; }
   const lineFace = (l) => l.face || (l.w === 'luno' ? (/！/.test(l.t) ? 'luno_determined' : 'luno_idle') : l.w === 'flam' ? 'flam_idle' : null);
+  // 台詞の中に「。」が2つ以上あるときは、一文ごとに改行する（すでに改行してある所・閉じかっこの前では改行しない）
+  const breakSentences = (t) => String(t).replace(/。(?=[^\n」』）)\s])/g, '。\n');
+  // 長い台詞が枠からあふれるときは、文字が出るのに合わせて下まで送る
+  const keepBottom = () => { const b = $('mbody'), over = $('mtext').getBoundingClientRect().bottom - b.getBoundingClientRect().bottom; if (over > 0) b.scrollTop += over; };   // 文字の下端が見えるところまでだけ送る（「仮」の印は送らない）
   function showLine(l, wait) {
     stopType();
+    if (l.w !== 'sys') l = Object.assign({}, l, { t: breakSentences(l.t) });
     const nm = STORY.names[l.w] || '', mt = $('mtext'), f = lineFace(l);
     $('np').hidden = !nm; $('np').textContent = nm;
     mt.className = 'mtext ' + (l.w || '');
     if (f && window.Render.img()) { $('face').hidden = false; window.Render.portrait($('face'), f); $('mbody').classList.remove('noface'); } else { $('face').hidden = true; $('mbody').classList.add('noface'); }
     $('mmeta').innerHTML = l.w === 'sys' ? '' : (l.p ? '<span class="pill prov">仮</span>' : '<span class="pill">原稿</span>' + (l.src ? '<span>' + l.src + '</span>' : ''));
     MS.full = l.t; MS.i = 0; $('nxt').hidden = true;
+    $('mbody').scrollTop = 0;
     if (!wait || REDUCED || !TUNE_UI.TYPE_MS || l.w === 'sys') { mt.textContent = l.t; MS.done = true; if (wait) $('nxt').hidden = false; return; }
     MS.done = false; mt.textContent = '';
-    MS.timer = setInterval(() => { MS.i++; mt.textContent = MS.full.slice(0, MS.i); if (MS.i >= MS.full.length) finishType(); }, TUNE_UI.TYPE_MS);
+    MS.timer = setInterval(() => { MS.i++; mt.textContent = MS.full.slice(0, MS.i); keepBottom(); if (MS.i >= MS.full.length) finishType(); }, TUNE_UI.TYPE_MS);
   }
   const sys = (t) => showLine({ w: 'sys', t });
   function advance() {

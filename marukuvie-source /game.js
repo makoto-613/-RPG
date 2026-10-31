@@ -87,9 +87,11 @@
     return { id: it, label: c.label, tags, off };
   }
   // 台詞（案内文）を出したまま、選択肢を出して、選ばれた id を返す
+  // line が配列なら、最後の1つ以外は順に読ませてから、最後の文を出したまま選ぶ。null なら、いま出ている文のまま選ぶ
   async function ask(run, line, items, offs) {
     UI.guard(run);
-    UI.showLine(line, false);
+    if (Array.isArray(line)) { for (const l of line.slice(0, -1)) await UI.say(run, l); line = line[line.length - 1]; }
+    if (line) UI.showLine(line, false);
     return UI.choose(run, items.map((it) => optFor(it, offs && typeof it === 'string' ? offs[it] : undefined)));
   }
 
