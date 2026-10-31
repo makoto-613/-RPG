@@ -22,20 +22,27 @@
     TILE_INSET: 0.045,     // タイルの縁を切り落とす割合（素材の縁にある暗い線を消す。大きいほど多く切る）
     WALK_MS: 330,          // 立ち絵が1マス歩くのにかかる時間（ミリ秒）
     BED_FOLD: 0.335,       // ベッドの絵で、折り返したシーツが始まる高さ（上から0〜1）。ここから下を布団としてアルボの上に重ねる
-    BED_HEAD_SLEEP: 0.1,   // 眠っているアルボの頭の上端（ベッドの絵の上から0〜1）。枕に頭がのる位置
+    BED_SLEEP_SINK: 0.03,   // 眠っているアルボの肩が、折り返したシーツより下へ沈む量（ベッドの絵の高さ比）。大きいほど布団に深く入る
+    BED_HEAD_SLEEP_DX: 0.05,   // 眠っているアルボの頭の横のずれ（マス）
+    BED_HEAD_SLEEP_S: 1.2,     // 眠っているアルボの頭の大きさ（立ち絵に対する倍率）
     BED_HEAD_SIT: 0.0,     // 起きて座っているアルボの頭の上端
     CAM_PAD: 1.1,          // スマホで見せる範囲を決めるとき、人物の中心から左右に足す幅（マス）
     CAM_PAD_ENEMY: 1.7,    // 同じく、ムカデの中心から左右に足す幅（マス）
     CAM_PAD_BOSS: 2.1,     // 同じく、トゲイモムシの中心から左右に足す幅（マス）
     FACE_DEAD: 0.4,        // ルノの向きを自動で決めるとき、見る相手がこの距離（マス）より近ければ、向きを変えない
     GATE_S: 1.5,           // 廃坑の入口の絵の大きさ（山より大きくならないように）
+    MEMO_GRAY: 0.85,       // 回想の場面で、色を抜く強さ（0〜1）
+    MEMO_TINT: 'rgb(246,214,170)',   // 回想の場面の、セピアの色
+    ALTAR_Y: 0.68,         // 命の祭壇の台の足元の高さ（画面比）
+    ALTAR_S: 1.3,         // 命の祭壇の台の大きさ
     ITEM_MS: 2200,         // 品物（日誌・包帯など）を画面に見せておく時間（ミリ秒）         // 立ち絵が呼吸するように揺れる大きさ
     VIEW_MIN: 7.6,         // 縦長の画面（スマホ）で、横に最低何マス分を見せるか（小さいほど人物が大きく、左右が切れる）
     SCREEN_FEET_TALL: 0.7  // 縦長の画面（スマホ）での、画面の上での足元の高さ
   };
   const POSE = {   // ポーズ名 → 絵の名前（アトラス）。story.js ではこの短い名前を使う
     luno: { idle: 'luno_idle', determined: 'luno_determined', examine: 'luno_examine', worried: 'luno_worried', surprised: 'luno_surprised', sad: 'luno_sad' },
-    flam: { idle: 'flam_idle', sit: 'flam_sit', happy: 'flam_happy', bark: 'flam_bark', sniff: 'flam_sniff', guard: 'flam_guard', injured: 'flam_injured', lie: 'flam_lie' }
+    // sad＝うなだれる／sit_sad＝心配そうに座る／lie_sad＝目を閉じて伏せる（悲しい表情。ご提供の絵の目と口を描き変えたもの）
+    flam: { idle: 'flam_idle', sit: 'flam_sit', happy: 'flam_happy', bark: 'flam_bark', sniff: 'flam_sniff', guard: 'flam_guard', injured: 'flam_injured', lie: 'flam_lie', sad: 'flam_sad', sit_sad: 'flam_sit_sad', lie_sad: 'flam_lie_sad' }
   };
   const SETS = {
     mine: { f: 'mine_floor', fi: [0, 3, 0, 0, 3, 3, 0, 3, 0, 3, 1, 0], w: 'mine_wall', wi: [0, 1, 2, 3, 4, 5], natural: true },   // natural：岩の壁・床。マス目を見せずに、なめらかに敷く
@@ -45,7 +52,11 @@
 
   /* ---------- 場面の一覧（背景の種類・置く小物・明かり）。小物は [絵の名前, 横位置(マス), 足元の高さ(画面比), 大きさ, オプション] ---------- */
   const PRESETS = {
-    dusk: { bg: 'sky', mood: 'dusk' },
+    dusk: { bg: 'sky', mood: 'dusk', props: [['sheep_graze', 8.3, 0.79, 1.5], ['sheep_lie', 10.7, 0.9, 1.6], ['sheep_idle', 0.9, 0.86, 1.6]] },
+    // 序章の回想（三人で羊の世話をしていたころ／アミーナが料理を作って待っていたころ／アミーナとの別れ）
+    memo_pasture: { bg: 'sky', mood: 'dawn', memo: true, props: [['sheep_graze', 1.4, 0.8, 1.6], ['sheep_idle', 6.3, 0.83, 1.6, { flip: true }], ['sheep_lie', 9.9, 0.9, 1.6], ['sheep_graze', 10.8, 0.79, 1.4, { flip: true }]] },
+    memo_house: { bg: 'house', memo: true, props: [['h_table', 5.4, 0.87, 1.1], ['h_chair', 4.3, 0.86, 1.0], ['h_lantern', 5.6, 0.87, 0.8, { dy: -0.95 }]] },
+    memo_amina: { bg: 'memory', memo: true },
     home_dawn: { bg: 'sky', mood: 'dawn' },
     house_in: { bg: 'house', bed: 7.4 },
     house_night: { bg: 'house', bed: 7.4, night: true },   // 夜の祖父母の家

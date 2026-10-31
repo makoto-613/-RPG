@@ -92,6 +92,7 @@
       drawHouse(9.0 * U, h * 0.72, dawn, now);
       for (let i = 0; i < 3; i++) spr('o_fence', (3.2 + i * 1.95) * U, h * 0.7, 0.92);
       spr('o_hay', 1.6 * U, h * 0.74, 1.0); spr('p_rock', 0.6 * U, h * 0.95, 0.9); spr('p_flowers', 10.5 * U, h * 0.98, 0.9); spr('p_flowers', 5.1 * U, h * 1.0, 0.8);
+      propsAndLights(S.spec, now);   // 場面ごとの小物（羊など）
       g.fillStyle = dawn ? 'rgba(255,220,170,.08)' : 'rgba(40,20,70,.34)'; g.fillRect(0, gy, w, HB - gy);   // 夕暮れは暗く
     }
     function drawHouse(cx, by, dawn, now) {
@@ -268,13 +269,13 @@
     }
     function drawAltar(now) {
       spr('stairs', 5.5 * U, 0.62 * h, 1.75);
-      // 台座
-      const px = 5.5 * U, py = 0.66 * h;
-      g.fillStyle = '#6c6a78'; rr(px - U * 0.6, py - U * 0.5, U * 1.2, U * 0.5, U * 0.06); g.fill(); stroke(U * 0.035);
-      g.fillStyle = '#85838f'; rr(px - U * 0.5, py - U * 0.58, U * 1.0, U * 0.16, U * 0.05); g.fill(); stroke(U * 0.03);
+      // 台座：ご提供の「祭壇石床・壁」の祭壇（壁や床と同じ石）。石は天板の上に置く
+      const px = 5.5 * U, py = ST.ALTAR_Y * h;
+      shadow(px, py, U * 1.3, 0.35);
+      const r = spr('altar_table', px, py, ST.ALTAR_S), topY = r ? r.top + r.dh * 0.1 : py - U;
       const pulse = 0.5 + 0.5 * Math.sin(now / 600);
-      glow(px, py - U * 1.1, U * (2.6 + pulse * 0.5), '230,150,255', 0.4 + 0.15 * pulse);
-      spr('life_stone', px, py - U * 0.52 + Math.sin(now / 700) * U * 0.05, 1.15);
+      glow(px, topY - U * 0.5, U * (2.6 + pulse * 0.5), '230,150,255', 0.4 + 0.15 * pulse);
+      spr('life_stone', px, topY + Math.sin(now / 700) * U * 0.05, 1.0);
       [2.4, 8.6].forEach((x, i) => { const r = spr('candle_stand', x * U, 0.66 * h, 0.9); if (r) { for (let k = 0; k < 7; k++) glow(r.cx - r.dw * 0.36 + k * r.dw * 0.12, r.top + r.dh * 0.2, U * 0.5, '255,190,100', 0.4 + 0.1 * Math.sin(now / 100 + k + i)); } });
     }
     function drawDesk(d, now) {
@@ -312,7 +313,7 @@
     }
     function drawFlam(c, now, fy) {
       const f = POSE.flam[c.p] || POSE.flam.idle, br = c.walk ? -Math.abs(Math.sin(now / 95)) * U * 0.07 : Math.sin(now / 760 + 1) * ST.BREATH * h * 0.7;
-      shadow(c.x * U, fy, U * (c.p === 'lie' ? 1.1 : 0.8), 0.3);
+      shadow(c.x * U, fy, U * (/^lie/.test(c.p) ? 1.1 : 0.8), 0.3);
       spr(f, c.x * U, fy + br, ST.CHAR_S * (c.s || 1) * 0.9, { flip: !!c.f });
     }
     // アルボ（祖父）・アミーナ（祖母）：ご提供の「アルボ（動き）」「アミーナ（動き）」から切り出した絵
@@ -323,10 +324,14 @@
       if (c.p === 'bed' || c.p === 'bed_sleep') {   // ベッドの中：頭と肩だけを出して、掛け布団を上からかける（bed＝起きている／bed_sleep＝眠っている）
         const B = bedBox(x, fy), fb = B.fb, bw = B.bw, bh = B.bh, bx = B.bx, bt = B.bt;
         if (!S.spec || S.spec.bed == null) drawBed(x, fy);
-        const sleep = c.p === 'bed_sleep', fa = sleep ? F.albo_sleep : F.albo_think, ka = U / 96 * ST.CHAR_S * 0.9, aw = fa.w * ka;
-        // 頭は枕の上に。体は、折り返したシーツ（BED_FOLD）より下まで描いて、その上から布団をかけるので、切れ目が見えない（杖を持っていない絵の上の方を使う）
-        const top = bt + bh * (sleep ? ST.BED_HEAD_SLEEP : ST.BED_HEAD_SIT), part = Math.min(1, (bt + bh * (ST.BED_FOLD + 0.08) - top) / (fa.h * ka));
-        g.drawImage(IMG(), fa.x, fa.y, fa.w, fa.h * part, x - aw / 2 + U * (sleep ? 0.0 : 0.08), top + br, aw, fa.h * part * ka);
+        const sleep = c.p === 'bed_sleep', ka = U / 96 * ST.CHAR_S * 0.9;
+        if (sleep) {   // 眠っている：頭と肩の絵（albo_bed_head）を、肩が布団に入るように枕の上へ置く
+          const fa = F.albo_bed_head, aw = fa.w * ka * ST.BED_HEAD_SLEEP_S, ah = fa.h * ka * ST.BED_HEAD_SLEEP_S;
+          g.drawImage(IMG(), fa.x, fa.y, fa.w, fa.h, x - aw / 2 + U * ST.BED_HEAD_SLEEP_DX, bt + bh * (ST.BED_FOLD + ST.BED_SLEEP_SINK) - ah + br, aw, ah);
+        } else {   // 起きて座っている：考えている絵の上の方を使い、体は布団の下まで描く（切れ目が見えない）
+          const fa = F.albo_think, aw = fa.w * ka, top = bt + bh * ST.BED_HEAD_SIT, part = Math.min(1, (bt + bh * (ST.BED_FOLD + 0.08) - top) / (fa.h * ka));
+          g.drawImage(IMG(), fa.x, fa.y, fa.w, fa.h * part, x - aw / 2 + U * 0.08, top + br, aw, fa.h * part * ka);
+        }
         const cut = ST.BED_FOLD;   // 折り返したシーツから下を、もう一度上に描く
         g.drawImage(IMG(), fb.x, fb.y + fb.h * cut, fb.w, fb.h * (1 - cut), bx, bt + bh * cut, bw, bh * (1 - cut));
         return;
@@ -341,6 +346,21 @@
     }
 
     /* ---------- 効果 ---------- */
+    // 回想の場面：色を抜いてセピア色にし、まわりをぼかしたように暗くして、左上に「回想」と出す
+    let FONT_H = '';
+    function memoFx() {
+      const cw = canvas.width, ch = canvas.height;
+      g.save();
+      g.globalCompositeOperation = 'saturation'; g.fillStyle = 'rgba(128,128,128,' + ST.MEMO_GRAY + ')'; g.fillRect(0, 0, cw, ch);
+      g.globalCompositeOperation = 'multiply'; g.fillStyle = ST.MEMO_TINT; g.fillRect(0, 0, cw, ch);
+      g.globalCompositeOperation = 'source-over';
+      const vg = g.createRadialGradient(cw / 2, ch * 0.42, Math.min(cw, ch) * 0.3, cw / 2, ch * 0.42, Math.max(cw, ch) * 0.62);
+      vg.addColorStop(0, 'rgba(255,240,215,.08)'); vg.addColorStop(1, 'rgba(60,38,18,.62)'); g.fillStyle = vg; g.fillRect(0, 0, cw, ch);
+      const fs = Math.max(12, Math.round(U * 0.26));
+      g.font = '700 ' + fs + 'px ' + (FONT_H || (FONT_H = getComputedStyle(document.documentElement).getPropertyValue('--font-h').trim() || 'serif'));
+      g.fillStyle = 'rgba(255,238,210,.85)'; g.textBaseline = 'top'; g.fillText('― 回想 ―', fs * 1.2, ch > cw ? ch * 0.13 : fs * 1.1);   // 縦長の画面では、上の状態表示に隠れないよう少し下に
+      g.restore();
+    }
     function motes(rgb, now, n) {
       g.save(); g.globalCompositeOperation = 'lighter';
       for (let i = 0; i < n; i++) {
@@ -426,6 +446,7 @@
         }
       }
       g.restore();
+      if (P.memo) memoFx();   // 回想：色をあせさせて、セピア色に
       // 四隅を暗く
       const vg = g.createRadialGradient(w / 2, HB / 2, HB * 0.4, w / 2, HB / 2, w * 0.7); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.4)'); g.fillStyle = vg; g.fillRect(0, 0, w, HB);
       // 切り替えの暗転・フラッシュ
