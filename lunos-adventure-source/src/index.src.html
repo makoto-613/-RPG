@@ -203,6 +203,9 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .rows li b { font-family: var(--font-h); color: var(--plum-d); }
 .sub { font: 700 13px/1.4 var(--font-h); letter-spacing: .1em; color: var(--olive); margin: 6px 0 0; }
 .tgl { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14.5px; }
+.vol { display: grid; grid-template-columns: 7.2em 1fr 2.6em; align-items: center; gap: 10px; font-size: 14.5px; margin: 2px 0 6px; }
+.vol input[type="range"] { width: 100%; min-width: 0; accent-color: var(--plum); height: 28px; cursor: pointer; }
+.vol output { text-align: right; font-variant-numeric: tabular-nums; color: var(--mute); }
 .sw { position: relative; width: 54px; height: 30px; border-radius: 999px; border: 2px solid var(--plum); background: #cfc4cc; cursor: pointer; padding: 0; flex: none; transition: background .15s; }
 .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--plum); transition: transform .15s; }
 .sw[aria-checked="true"] { background: var(--teal); } .sw[aria-checked="true"]::after { transform: translateX(24px); }

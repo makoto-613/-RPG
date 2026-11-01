@@ -15,7 +15,7 @@
   };
 
   let AC = null;
-  const S = { enabled: true, bgm: true };   // enabled＝効果音、bgm＝BGM（メニューで切り替え）
+  const S = { enabled: true, bgm: true, seVol: 1, bgmVol: 1 };   // enabled＝効果音、bgm＝BGM（メニューで切り替え）。seVol・bgmVol＝設定の音量バー（0〜1。シートの音量にかける）
 
   function ac() {
     try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { AC = null; }
@@ -24,14 +24,14 @@
   function tone(t0, f0, f1, d, type, v) {
     const a = AC, o = a.createOscillator(), g = a.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f0, t0);
     if (f1) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t0 + d);
-    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, v * SND.VOL), t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, v * SND.VOL * S.seVol), t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
     o.connect(g); g.connect(a.destination); o.start(t0); o.stop(t0 + d + 0.03);
   }
   function noise(t0, d, v, f) {
     const a = AC, n = Math.floor(a.sampleRate * d), b = a.createBuffer(1, n, a.sampleRate), ch = b.getChannelData(0);
     for (let i = 0; i < n; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / n);
     const s = a.createBufferSource(); s.buffer = b; const fl = a.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = f || 1200;
-    const g = a.createGain(); g.gain.value = v * SND.VOL; s.connect(fl); fl.connect(g); g.connect(a.destination); s.start(t0);
+    const g = a.createGain(); g.gain.value = v * SND.VOL * S.seVol; s.connect(fl); fl.connect(g); g.connect(a.destination); s.start(t0);
   }
   const SFX = {
     bump: (t) => tone(t, 150, 70, 0.12, 'sine', 1), push: (t) => noise(t, 0.09, 0.8, 500), click: (t) => tone(t, 700, 500, 0.05, 'square', 0.3),
@@ -104,7 +104,7 @@
     if (!S.enabled) return;
     if (SND.SOLO[n] && playing(n)) return;   // 鳴っている最中は鳴らさない
     const e0 = CFG().SE[n], f = seFile(e0, v), e = e0 && Object.assign({}, e0, { file: f }), url = f ? FILE(f) : null;
-    if (url) { playFile(n, v, f, Math.max(0, Math.min(1, (e.vol == null ? 80 : e.vol) / 100))); return; }   // シートで決めた音
+    if (url) { playFile(n, v, f, Math.max(0, Math.min(1, (e.vol == null ? 60 : e.vol) / 100 * S.seVol))); return; }   // シートで決めた音
     if (e && e.file && !FILE(e.file)) warnOnce('効果音のファイルがまだありません:', e.file);
     const a = ac(); if (!a) return; try { SFX[n](a.currentTime); if (SND.SOLO[n]) SYN_UNTIL[n] = performance.now() + 600; } catch (x) { /* 音が出なくても進行には影響しない */ }
   }
@@ -124,14 +124,15 @@
     if (e.file === 'なし') { stopBgm(e.fade); return; }
     const url = FILE(e.file); if (!url) { warnOnce('BGMのファイルがまだありません:', e.file); return; }
     const vol = Math.max(0, Math.min(1, (e.vol == null ? 60 : e.vol) / 100));
-    if (B.file === e.file && B.el) { B.vol = vol; fadeEl(B.el, S.bgm ? vol : 0, 0.5); return; }   // 同じ曲：切らずに流し続ける
+    if (B.file === e.file && B.el) { B.vol = vol; fadeEl(B.el, S.bgm ? vol * S.bgmVol : 0, 0.5); return; }   // 同じ曲：切らずに流し続ける
     stopBgm(e.fade);
     const el = new Audio(url); el.loop = e.loop !== false; el.volume = 0; B.el = el; B.file = e.file; B.vol = vol;
-    el.play().then(() => { if (B.el === el) fadeEl(el, S.bgm ? vol : 0, e.fade == null ? 1 : e.fade); }).catch(() => { B.pending = true; });   // 最初の操作の前は鳴らせない
+    el.play().then(() => { if (B.el === el) fadeEl(el, S.bgm ? vol * S.bgmVol : 0, e.fade == null ? 1 : e.fade); }).catch(() => { B.pending = true; });   // 最初の操作の前は鳴らせない
   }
-  function unlock() { ac(); preloadSe(); if (B.pending && B.el) { B.pending = false; const el = B.el; el.play().then(() => fadeEl(el, S.bgm ? B.vol : 0, 0.8)).catch(() => { B.pending = true; }); } }
-  function setBgmOn(on) { S.bgm = !!on; if (B.el) fadeEl(B.el, S.bgm ? B.vol : 0, 0.3); }
+  function unlock() { ac(); preloadSe(); if (B.pending && B.el) { B.pending = false; const el = B.el; el.play().then(() => fadeEl(el, S.bgm ? B.vol * S.bgmVol : 0, 0.8)).catch(() => { B.pending = true; }); } }
+  function setBgmOn(on) { S.bgm = !!on; if (B.el) fadeEl(B.el, S.bgm ? B.vol * S.bgmVol : 0, 0.3); }
+  function setBgmVol(q) { S.bgmVol = Math.max(0, Math.min(1, q)); if (B.el && S.bgm) B.el.volume = B.vol * S.bgmVol; }   // 音量バーを動かしたとき（すぐ反映）
   ['pointerdown', 'keydown'].forEach((t) => window.addEventListener(t, unlock, true));
 
-  window.Sound = { ac, sfx, cutSe, preloadSe, seLoaded: () => Object.keys(BUF).length, seActive: () => ACTIVE.size, bgm, stopBgm, setBgmOn, unlock, S, SND, state: B };
+  window.Sound = { ac, sfx, cutSe, preloadSe, seLoaded: () => Object.keys(BUF).length, seActive: () => ACTIVE.size, bgm, stopBgm, setBgmOn, setBgmVol, unlock, S, SND, state: B };
 })();

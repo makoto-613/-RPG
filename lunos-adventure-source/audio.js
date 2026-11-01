@@ -166,19 +166,19 @@ window.AUDIO = {
  "SE": {
   "baa": {
    "file": "羊の鳴き声.mp3",
-   "vol": 80
+   "vol": 60
   },
   "click": {
    "file": "決定・選択.mp3",
-   "vol": 80
+   "vol": 60
   },
   "warn": {
    "file": "不可の時.mp3",
-   "vol": 80
+   "vol": 60
   },
   "gauge": {
    "file": "ダメージ.mp3",
-   "vol": 80,
+   "vol": 60,
    "alt": {
     "bad": "ダメージ.mp3",
     "good": "回復時.mp3"
@@ -186,50 +186,50 @@ window.AUDIO = {
   },
   "bump": {
    "file": "進行不能.mp3",
-   "vol": 80
+   "vol": 60
   },
   "push": {
    "file": "重いものを引きずる.mp3",
-   "vol": 80
+   "vol": 60
   },
   "plate": {
    "file": "軽い成功音.mp3",
-   "vol": 80
+   "vol": 60
   },
   "lever": {
    "file": "レバー音.mp3",
-   "vol": 80
+   "vol": 60
   },
   "rot": {
    "file": "ひねる音.mp3",
-   "vol": 80
+   "vol": 60
   },
   "lit": {
    "file": "軽い成功音.mp3",
-   "vol": 80
+   "vol": 60
   },
   "open": {
    "file": "ゴゴゴゴ.mp3",
-   "vol": 80
+   "vol": 60
   },
   "win": {
    "file": "成功音.mp3",
-   "vol": 80
+   "vol": 60
   },
   "item": {
    "file": "ゴゴゴゴ.mp3",
-   "vol": 80,
+   "vol": 60,
    "alt": {
     "hidden": "隠し部屋.mp3"
    }
   },
   "splash": {
    "file": "水に潜る.mp3",
-   "vol": 80
+   "vol": 60
   },
   "bark": {
    "file": "犬の鳴き声1.mp3",
-   "vol": 80,
+   "vol": 60,
    "pick": [
     "犬の鳴き声1.mp3",
     "犬の鳴き声2.mp3",
@@ -239,35 +239,35 @@ window.AUDIO = {
   },
   "crumble": {
    "file": "ゴゴゴゴ.mp3",
-   "vol": 80
+   "vol": 60
   },
   "hit": {
    "file": "打撃3.mp3",
-   "vol": 80
+   "vol": 60
   },
   "miss": {
    "file": "回避.mp3",
-   "vol": 80
+   "vol": 60
   },
   "heal": {
    "file": "回復(戦闘）.mp3",
-   "vol": 80
+   "vol": 60
   },
   "alarm": {
    "file": "警告.mp3",
-   "vol": 80
+   "vol": 60
   },
   "lose": {
    "file": "ゲームオーバー.mp3",
-   "vol": 80
+   "vol": 60
   },
   "sad": {
    "file": "タイムオーバー.mp3",
-   "vol": 80
+   "vol": 60
   },
   "glow": {
    "file": "結末.mp3",
-   "vol": 80
+   "vol": 60
   }
  }
 };

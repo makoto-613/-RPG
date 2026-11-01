@@ -30,7 +30,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 保存できなくても進行はできる */ } },
     del(k) { try { localStorage.removeItem(k); } catch (e) { /* 無視 */ } }
   };
-  const prefs = Object.assign({ notes: false, sound: true, bgm: true }, store.get(TUNE_G.PREF_KEY) || {});
+  const prefs = Object.assign({ notes: false, sound: true, bgm: true, bgmVol: 100, seVol: 100 }, store.get(TUNE_G.PREF_KEY) || {});   // bgmVol・seVol＝設定の音量バー（0〜100）
   let endings = store.get(TUNE_G.END_KEY) || {};
   const savePrefs = () => store.set(TUNE_G.PREF_KEY, prefs);
 
@@ -298,7 +298,9 @@
         + '</div>';
     }
     h += '<div class="tgl"><span>BGM</span><button class="sw" id="sw-bgm" role="switch" aria-checked="' + !!prefs.bgm + '" aria-label="BGM"></button></div>'
+      + '<div class="vol"><label for="vol-bgm">BGMの音量</label><input type="range" id="vol-bgm" min="0" max="100" step="5" value="' + prefs.bgmVol + '"><output id="vo-bgm">' + prefs.bgmVol + '</output></div>'
       + '<div class="tgl"><span>効果音</span><button class="sw" id="sw-snd" role="switch" aria-checked="' + !!prefs.sound + '" aria-label="効果音"></button></div>'
+      + '<div class="vol"><label for="vol-se">効果音の音量</label><input type="range" id="vol-se" min="0" max="100" step="5" value="' + prefs.seVol + '"><output id="vo-se">' + prefs.seVol + '</output></div>'
       + '<div class="tgl"><span>補足の表示（原稿／仮の印）</span><button class="sw" id="sw-note" role="switch" aria-checked="' + !!prefs.notes + '" aria-label="補足の表示"></button></div>';
     if (inPlay) {
       h += '<div class="btns">' + (mode === 'puzzle' ? '<button class="kbtn sm" id="m-auto">答えを自動で見る</button>' : '') + (mode === 'battle' ? '<button class="kbtn sm" id="m-bhelp">戦い方</button>' : '') + '<button class="kbtn sm" id="m-restart">この区画を最初から</button><button class="kbtn sm rd" id="m-title">タイトルへ</button></div>';
@@ -318,6 +320,10 @@
       const tg = (id, key, after) => { const b = d.querySelector('#' + id); b.onclick = () => { prefs[key] = !prefs[key]; b.setAttribute('aria-checked', String(!!prefs[key])); savePrefs(); if (after) after(); sfx('click'); }; };
       tg('sw-snd', 'sound', () => { window.Sound.S.enabled = prefs.sound; });
       tg('sw-bgm', 'bgm', () => { window.Sound.setBgmOn(prefs.bgm); });
+      const vb = d.querySelector('#vol-bgm'), vs = d.querySelector('#vol-se');
+      vb.oninput = () => { prefs.bgmVol = +vb.value; d.querySelector('#vo-bgm').textContent = vb.value; window.Sound.setBgmVol(prefs.bgmVol / 100); };
+      vs.oninput = () => { prefs.seVol = +vs.value; d.querySelector('#vo-se').textContent = vs.value; window.Sound.S.seVol = prefs.seVol / 100; };
+      vb.onchange = savePrefs; vs.onchange = () => { savePrefs(); sfx('click'); };   // 手を離したとき：保存して、効果音は試しに1回鳴らす
       tg('sw-note', 'notes', () => document.body.classList.toggle('notes-off', !prefs.notes));
       d.querySelector('#m-close').onclick = () => { menuOpen = false; UI.closeVeil(); };
       let armed = false; const er = d.querySelector('#m-erase');
@@ -384,7 +390,7 @@
   /* ---------------- 起動 ---------------- */
   async function boot() {
     document.body.classList.toggle('notes-off', !prefs.notes);
-    window.Sound.S.enabled = !!prefs.sound; window.Sound.S.bgm = !!prefs.bgm;
+    window.Sound.S.enabled = !!prefs.sound; window.Sound.S.bgm = !!prefs.bgm; window.Sound.S.seVol = prefs.seVol / 100; window.Sound.S.bgmVol = prefs.bgmVol / 100;
     try { await Render.load(window.ATLAS_URL); }
     catch (e) { $('ld').textContent = 'ドット絵の読み込みに失敗しました。ページを開き直してください。'; return; }
     stage = Stage.create($('cv')); Puzzle.init($('cv')); Battle.init($('cv'));
