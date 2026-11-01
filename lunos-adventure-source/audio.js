@@ -164,6 +164,10 @@ window.AUDIO = {
   }
  },
  "SE": {
+  "baa": {
+   "file": "羊の鳴き声.mp3",
+   "vol": 80
+  },
   "click": {
    "file": "決定・選択.mp3",
    "vol": 80

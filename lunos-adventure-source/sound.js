@@ -9,6 +9,7 @@
     VOL: 0.2,          // 仮の合成音の大きさ（0〜1）
     ONSET: 0.25,       // 効果音の頭の、ほぼ無音の部分を飛ばして鳴らす（いちばん大きい所のこの割合に届くまでを飛ばす）。操作とのズレを減らす
     CUT_FADE: 0.25,    // 台詞を送ったときなどに、鳴っている効果音を消していく秒数
+    SOLO: { baa: true },   // ここに書いた効果音は、鳴っている間に同じ音を重ねない（鳴り終わってから、次の操作でまた鳴る）
     // 効果音ごとの、鳴らす長さの上限（秒）。長い音がいつまでも続かないように、ここで止める（フェードして消す）。書いていない音は最後まで鳴らす
     MAX_SEC: { push: 0.9, open: 3.0, crumble: 2.5, item: 2.2, bark: 1.6, heal: 1.6, win: 2.2, glow: 4.5, sad: 4.0, lose: 2.4, splash: 1.3, 'item:hidden': 3.5 }
   };
@@ -37,6 +38,7 @@
     plate: (t) => tone(t, 330, 440, 0.1, 'triangle', 0.8), plateoff: (t) => tone(t, 440, 300, 0.1, 'triangle', 0.6),
     lever: (t) => { tone(t, 200, 320, 0.14, 'sawtooth', 0.4); noise(t, 0.1, 0.4, 800); }, rot: (t) => tone(t, 520, 700, 0.07, 'triangle', 0.7),
     swap: (t) => tone(t, 440, 660, 0.08, 'square', 0.3), give: (t) => tone(t, 520, 880, 0.2, 'sine', 0.9),
+    baa: (t) => { tone(t, 520, 470, 0.22, 'sawtooth', 0.35); tone(t + 0.2, 500, 430, 0.35, 'sawtooth', 0.3); },   // 羊（ファイルがないときの仮の音）
     lit: (t) => [660, 880, 1320].forEach((f, i) => tone(t + i * 0.07, f, 0, 0.25, 'sine', 0.6)),
     open: (t) => { noise(t, 0.5, 0.7, 300); tone(t + 0.1, 220, 330, 0.5, 'triangle', 0.5); [523, 784].forEach((f, i) => tone(t + 0.3 + i * 0.12, f, 0, 0.3, 'sine', 0.5)); },
     win: (t) => [523, 659, 784, 1047].forEach((f, i) => tone(t + i * 0.12, f, 0, 0.35, 'triangle', 0.7)),
@@ -88,20 +90,23 @@
     const a = ac(), d = BUF[f], max = SND.MAX_SEC[n + ':' + v] || SND.MAX_SEC[n];
     if (a && d) {
       const src = a.createBufferSource(), g = a.createGain(); src.buffer = d.b; g.gain.value = vol; src.connect(g); g.connect(a.destination);
-      const t = a.currentTime, x = { src, g }; src.start(t, d.off);
+      const t = a.currentTime, x = { src, g, n }; src.start(t, d.off);
       if (max && d.b.duration - d.off > max) { g.gain.setValueAtTime(vol, t + max - 0.3); g.gain.linearRampToValueAtTime(0, t + max); src.stop(t + max + 0.02); }
       ACTIVE.add(x); src.onended = () => ACTIVE.delete(x);
       return;
     }
     decodeFile(f);   // まだ読み込めていない：今回だけはファイルから直接鳴らす
-    try { const el = new Audio(FILE(f)), x = { el }; el.volume = vol; el.play().catch(() => {}); ACTIVE.add(x); el.onended = () => ACTIVE.delete(x); if (max) setTimeout(() => { el.pause(); ACTIVE.delete(x); }, max * 1000); } catch (e) { /* 無視 */ }
+    try { const el = new Audio(FILE(f)), x = { el, n }; el.volume = vol; el.play().catch(() => {}); ACTIVE.add(x); el.onended = () => ACTIVE.delete(x); if (max) setTimeout(() => { el.pause(); ACTIVE.delete(x); }, max * 1000); } catch (e) { /* 無視 */ }
   }
+  const SYN_UNTIL = {};   // 仮の合成音を鳴らしているあいだ（重ねない音のため）
+  function playing(n) { for (const x of ACTIVE) if (x.n === n) return true; return (SYN_UNTIL[n] || 0) > performance.now(); }
   function sfx(n, v) {
     if (!S.enabled) return;
+    if (SND.SOLO[n] && playing(n)) return;   // 鳴っている最中は鳴らさない
     const e0 = CFG().SE[n], f = seFile(e0, v), e = e0 && Object.assign({}, e0, { file: f }), url = f ? FILE(f) : null;
     if (url) { playFile(n, v, f, Math.max(0, Math.min(1, (e.vol == null ? 80 : e.vol) / 100))); return; }   // シートで決めた音
     if (e && e.file && !FILE(e.file)) warnOnce('効果音のファイルがまだありません:', e.file);
-    const a = ac(); if (!a) return; try { SFX[n](a.currentTime); } catch (x) { /* 音が出なくても進行には影響しない */ }
+    const a = ac(); if (!a) return; try { SFX[n](a.currentTime); if (SND.SOLO[n]) SYN_UNTIL[n] = performance.now() + 600; } catch (x) { /* 音が出なくても進行には影響しない */ }
   }
 
   /* ---------------- BGM ---------------- */

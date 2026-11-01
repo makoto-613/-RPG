@@ -128,7 +128,7 @@
   function onBump(r, who) {
     who.shk = nowMs() + TUNE_P.BUMP_MS;
     const ev = r.ev[0]; if (!ev || ev.t !== 'bump') return;
-    const fx = STORY.puz[P.sid].fx.bump[ev.k]; sfx('bump');
+    const fx = STORY.puz[P.sid].fx.bump[ev.k]; sfx('bump'); if (ev.k === 'sheep_stuck') sfx('baa');   // 動けない羊を押しても鳴く
     const t = typeof fx === 'function' ? fx(ev.ch) : fx; if (t) sys(t);
   }
   function runTasks(tasks) {
@@ -146,8 +146,8 @@
     evs.forEach((e) => {
       if (sid === 's0') {
         const sh = V.sheep.find((q) => !q.pen && q.tx === e.from[0] && q.ty === e.from[1]);
-        if (e.t === 'herd' || e.t === 'dodge') { if (sh) { sh.tx = e.to[0]; sh.ty = e.to[1]; } sfx('push'); if (e.t === 'dodge') sys(S.fx.dodge); }
-        else if (e.t === 'pen') { if (sh) { sh.tx = e.to[0]; sh.ty = e.to[1]; sh.pen = true; } sfx('bark'); fxSpark(e.to[0], e.to[1] - 0.3, 10, '#ffe9a8'); fxRing(e.to[0], e.to[1], '#fff3c0'); sys(S.fx.pen(e.n, e.m)); }
+        if (e.t === 'herd' || e.t === 'dodge') { if (sh) { sh.tx = e.to[0]; sh.ty = e.to[1]; } sfx('push'); sfx('baa'); if (e.t === 'dodge') sys(S.fx.dodge); }
+        else if (e.t === 'pen') { if (sh) { sh.tx = e.to[0]; sh.ty = e.to[1]; sh.pen = true; } sfx('bark'); sfx('baa'); fxSpark(e.to[0], e.to[1] - 0.3, 10, '#ffe9a8'); fxRing(e.to[0], e.to[1], '#fff3c0'); sys(S.fx.pen(e.n, e.m)); }
         else if (e.t === 'win') { if (H.win) tasks.push(H.win); }
         return;
       }
