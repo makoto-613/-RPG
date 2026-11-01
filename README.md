@@ -15,7 +15,7 @@ node test/run_all.js     # 自動テストをすべて動かす（数分かか�
 |---|---|
 | `atlas.js` | ドット絵の切り出し位置（画像は `assets/atlas.webp`） |
 | `rules.js` | カルマ・不安・HP・タイマーの数値と、選択肢の表（v6.0「選択肢と分岐」） |
-| `levels.js` | 謎解きの盤面（区画1・2・4・7） |
+| `levels.js` | 謎解きの盤面（区画1・2・4・7）。難易度ごと（easy／normal／hard） |
 | `core.js` | 謎解きのルール（画面に依存しない。自動テストでも使う） |
 | `story.js` | 台詞・場面の指定・謎解きの文。`p:1` が付いた文は「仮」 |
 | `audio.js` | BGM・効果音の設定（シートから作る） |
@@ -40,8 +40,9 @@ node test/run_all.js     # 自動テストをすべて動かす（数分かか�
 - 台詞を直す：`story.js`（またはセリフ修正シート → `tools/apply_sheet.py`）
 - 選択肢のカルマ・不安の増減：`rules.js` の `CHOICES`
 - 場面の背景・小物・立ち位置の見た目：`stage_data.js`
-- 謎解きの盤面：`levels.js`（変えたら `node test/run_all.js` で解けるか確かめる）
-- 戦闘の数値：`battle_rules.js` の先頭の `BT`
+- 謎解きの盤面：`levels.js` の easy／normal／hard（変えたら `node test/levels_check.js` で解けるか確かめる）。目標とヒントの文は `story.js` の `puz`（難易度ごとの文は `diff`）
+- 難易度の名前と説明：`story.js` の `diffs`
+- 戦闘の数値：`battle_rules.js` の先頭の `BT`。難易度ごとの敵の強さは `ENEMY_DIFF`
 - BGM・効果音：BGM・効果音シート → `tools/make_audio_js.py` か `tools/audio_from_dump.py`、音のファイルは `assets/audio/`
 
 各ファイルの先頭に「★ 調整用の数値」があり、日本語のコメント付きで数値だけ変えられます。
@@ -63,4 +64,4 @@ node test/run_all.js     # 自動テストをすべて動かす（数分かか�
 
 - `snapshot.js` と `snapcmp.py`：時間と乱数を止めて全場面を撮り、作り直す前と後を比べる（`node test/snapshot.js 出力先` → `python3 test/snapcmp.py 前 後`）
 - `allscenes.js`：物語の全場面を撮る（`node test/allscenes.js 1280 800 pc`）
-- `sim.js`：戦闘のバランスを、何回も戦わせて確かめる
+- `sim.js`：戦闘のバランスを、何回も戦わせて確かめる（`node test/sim.js boss 20 20 hard` のように難易度も指定できる）
