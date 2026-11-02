@@ -36,38 +36,9 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 3px s
 .gut { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
 /* ---------- ヘッダー帯 ---------- */
-.hdr { background: var(--plum-d) var(--u-hdr) 0 0 / 75px 72px repeat-x; color: #fff; position: relative; }
-.hdr::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20, 8, 20, .28), rgba(255, 255, 255, .10)); pointer-events: none; }
-.hdr-in { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; height: 72px; display: flex; align-items: center; gap: 12px; }
 .emb { width: 40px; height: 40px; flex: none; background: url(@@ui/emblem.png@@) center / contain no-repeat; }
-.hdr-t { font: 700 20px/1.2 var(--font-h); letter-spacing: .08em; text-shadow: 0 2px 0 rgba(30, 14, 28, .55); min-width: 0; overflow-wrap: anywhere; word-break: auto-phrase; text-wrap: balance; }
-.hdr-s { font: 500 11px/1.2 var(--font-b); opacity: .85; letter-spacing: .14em; margin-top: 3px; }
-.hdr-grow { flex: 1; min-width: 0; }
-.hdr-r { display: flex; align-items: center; gap: 8px; flex: none; }
-.iconbtn { width: 44px; height: 44px; border: 0; padding: 0; background: transparent center / contain no-repeat; cursor: pointer; flex: none; }
-.iconbtn.back { background-image: url(@@ui/button_back_02.png@@); }
-.iconbtn.back:hover { background-image: url(@@ui/button_back_02_hover.png@@); }
-.iconbtn.back:active { background-image: url(@@ui/button_back_02_click.png@@); }
 
 /* ---------- 状態の帯（カルマ・不安・HP・残り時間） ---------- */
-#st-k, #st-a, .phud .pk, .phud .pa { display: none !important; }   /* カルマ・不安の数値は画面に出さない（内部の計算には使う） */
-.sbar { background: rgba(249, 248, 241, .94); border-bottom: 2px solid var(--plum); }
-.sbar-in { max-width: 1120px; margin: 0 auto; padding: 6px 0; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
-.stat { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 9px; border: 1.5px solid var(--plum); border-radius: 999px; background: #fff; font: 700 12px/1.2 var(--font-b); cursor: pointer; white-space: nowrap; color: var(--plum-d); }
-.stat b { font: 700 16px/1 var(--font-h); font-variant-numeric: tabular-nums; min-width: 1.5em; text-align: right; }
-.stat .g { width: 44px; height: 8px; border-radius: 99px; background: #e6dfcf; border: 1px solid rgba(94, 77, 90, .5); overflow: hidden; position: relative; display: inline-block; }
-.stat .g i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, var(--lime), var(--amber)); transition: width .4s; }
-.stat.a .g i { background: linear-gradient(90deg, #8fc3cf, #c98bd1, var(--rose)); }
-.stat.bump { animation: bump .7s ease; }
-@keyframes bump { 0% { transform: scale(1); background: #fff; } 25% { transform: scale(1.12); background: #fff3c9; } 100% { transform: scale(1); background: #fff; } }
-.hp { display: inline-flex; align-items: baseline; gap: 4px; font: 700 12px/1.2 var(--font-b); color: var(--plum-d); white-space: nowrap; padding: 3px 9px; border-radius: 999px; background: rgba(224, 208, 189, .5); border: 1.5px solid rgba(94, 77, 90, .45); }
-.hp b { font: 700 15px/1 var(--font-h); font-variant-numeric: tabular-nums; }
-.hp::before { content: "♥"; color: var(--rose); font-size: 11px; }
-.hp.bump { animation: bump .7s ease; }
-.tm { margin-left: auto; display: inline-flex; align-items: baseline; gap: 5px; font: 700 12px/1.2 var(--font-b); padding: 3px 11px; border-radius: 999px; background: var(--plum-d); color: #fff; white-space: nowrap; }
-.tm b { font: 700 17px/1 var(--font-h); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
-.tm.w1 { background: #a56a14; } .tm.w2 { background: var(--rose); } .tm.w3 { background: var(--rose); animation: blink .8s steps(2) infinite; }
-@keyframes blink { 50% { opacity: .55; } }
 
 /* ---------- 青緑／赤の丸ボタン（キットの画像を9分割して伸ばす） ---------- */
 .kbtn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 112px; min-height: 46px; padding: 6px 26px; border: 0; background: none; cursor: pointer;
@@ -133,9 +104,8 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .banner.warn { background: rgba(165, 106, 20, .95); } .banner.alert { background: rgba(178, 58, 82, .95); }
 .toasts { position: absolute; right: 8px; bottom: 8px; z-index: 3; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; pointer-events: none; }
 .toast { padding: 4px 10px; border-radius: 999px; border: 1.5px solid var(--plum-d); background: rgba(249, 248, 241, .95); color: var(--plum-d); font: 700 12.5px/1.3 var(--font-b); animation: toast 2.6s ease forwards; }
-.toast.k { background: #fbe3c6; border-color: #b9741a; color: #7a4305; } .toast.a { background: #ead9f3; border-color: #8a5aa6; color: #4e2a66; } .toast.hp { background: #fbe0e4; border-color: var(--rose); color: #8f2a40; } .toast.ok { background: #dff0ea; border-color: var(--teal); color: #1c6358; }
+.toast.hp { background: #fbe0e4; border-color: var(--rose); color: #8f2a40; } .toast.ok { background: #dff0ea; border-color: var(--teal); color: #1c6358; }
 @keyframes toast { 0% { opacity: 0; transform: translateY(6px); } 10%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
-.notes-off .toast.k, .notes-off .toast.a { display: none; }
 .side { display: grid; gap: 12px; min-width: 0; }
 .msg { position: relative; min-height: 132px; padding: 20px 16px 16px; cursor: pointer; }
 .msg .np { top: -14px; left: 14px; }
@@ -209,9 +179,6 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .sw { position: relative; width: 54px; height: 30px; border-radius: 999px; border: 2px solid var(--plum); background: #cfc4cc; cursor: pointer; padding: 0; flex: none; transition: background .15s; }
 .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 2px solid var(--plum); transition: transform .15s; }
 .sw[aria-checked="true"] { background: var(--teal); } .sw[aria-checked="true"]::after { transform: translateX(24px); }
-.kbar { height: 12px; border-radius: 999px; border: 1.5px solid var(--plum); background: #e9e3d6; overflow: hidden; }
-.kbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--lime), var(--amber), var(--rose)); }
-.kbar.a i { background: linear-gradient(90deg, #8fc3cf, #c98bd1, var(--rose)); }
 .endcard { text-align: center; display: grid; gap: 6px; padding: 6px 0 2px; }
 .endcard .mk { font: 700 40px/1 var(--font-h); color: var(--plum); }
 .endcard .nm { font: 700 22px/1.4 var(--font-h); letter-spacing: .1em; color: var(--plum-d); }
@@ -231,17 +198,13 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .cr { font-size: 12.5px; line-height: 1.75; color: var(--mute); }
 .cr a { color: var(--olive); word-break: break-all; }
 @media (max-width: 560px) {
-  .hdr-in { gap: 8px; }
-  .hdr-t { font-size: 16px; letter-spacing: .03em; } .hdr-s { letter-spacing: .06em; }
   .kbtn.sm { min-width: 72px; padding: 4px 12px; }
   .pad { gap: 10px; padding: 12px 10px 12px 12px; }
   .acts { flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
   .acts .kbtn { min-width: 0; width: 100%; }
   .mtext { font-size: 15px; }
-  .stat .g { width: 34px; }
   .endb .nm { font-size: 9.5px; }
 }
-@media (max-width: 400px) { .hdr-in > .emb { display: none; } .hdr-t { font-size: 15px; } .stat { padding: 3px 8px; } }
 
 /* モードごとの表示切り替え（novel ＝ 物語／puzzle ＝ 謎解き／battle ＝ 戦闘） */
 #pad, #cmd, .keys-p, .keys-b { display: none; }
@@ -250,7 +213,7 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .play[data-mode="novel"] .face, .play[data-mode="lamp"] .face { display: none; }
 .play[data-mode="novel"] .msg-body, .play[data-mode="lamp"] .msg-body { grid-template-columns: minmax(0, 1fr); }
 @media (hover: none) and (pointer: coarse) { .keys-p, .keys-b { display: none !important; } }
-@media (prefers-reduced-motion: reduce) { .phud > .pt.w3, .nxt, .tm.w3, .stat.bump, .hp.bump { animation: none; } .veil, .banner { animation: none; } .fade-v { transition: none; } * { scroll-behavior: auto !important; } }
+@media (prefers-reduced-motion: reduce) { .phud > .pt.w3, .nxt { animation: none; } .veil, .banner { animation: none; } .fade-v { transition: none; } * { scroll-behavior: auto !important; } }
 /* ---------- ノベルの場面：台詞の枠・選択肢を、場面の絵の上に半透明で重ねる ---------- */
 .play[data-mode="novel"] { grid-template-columns: minmax(0, 1fr); max-width: 1000px; margin-inline: auto; }
 .play[data-mode="novel"] .side { display: none; }
@@ -275,7 +238,6 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .play[data-mode="novel"] .toasts { bottom: auto; top: 52px; }
 @media (max-width: 640px) { .cvwrap > .msg { height: 33%; padding: 14px 14px 10px; } .cvwrap > .choices { top: 4%; width: 92%; } }
 /* ---------- タイトル画面：廃坑の入口を画面いっぱいに描き、その上にタイトルと選択肢を重ねる ---------- */
-body.on-title .hdr, body.on-title .sbar { display: none; }
 body.on-title main { max-width: none; padding: 0; }
 .title-full { position: relative; height: 100vh; height: 100dvh; min-height: 560px; overflow: hidden; background: #171322; }
 .title-full canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -302,7 +264,6 @@ body.on-title main { max-width: none; padding: 0; }
 /* ---------- 謎解き：全画面（案C）。ヘッダーを隠し、盤面を画面いっぱいに。状態・台詞・操作は端に浮かせる ---------- */
 .phud { display: none; }
 body.on-puzzle { background: #171322; }
-body.on-puzzle .hdr, body.on-puzzle .sbar { display: none; }
 body.on-puzzle main { max-width: none; padding: 0; }
 .play[data-mode="puzzle"] { display: block; position: relative; height: 100vh; height: 100dvh; background: #171322; overflow: hidden; }
 .play[data-mode="puzzle"] .left { height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -332,7 +293,7 @@ body.on-puzzle main { max-width: none; padding: 0; }
 .phud > span, .phud button { padding: 5px 11px; border-radius: 999px; background: rgba(28, 24, 46, .78); color: #fff; font: 700 12.5px/1.2 var(--font-b); border: 1px solid rgba(255, 255, 255, .32); white-space: nowrap; }
 .phud b { font-family: var(--font-h); font-size: 14px; }
 /* 懐中時計：金の縁・上に竜頭。文字盤は 朝（左下）→昼（上）→夕方（右）→夜（下） の空の色。針の先は太陽、夜が近づくと月 */
-.phud > .pt { position: relative; width: 50px; height: 50px; padding: 0; border-radius: 50%; margin-top: 8px; flex: none;
+.phud > .pt { position: fixed; z-index: 8; top: max(16px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); width: 60px; height: 60px; padding: 0; border-radius: 50%; margin: 0; flex: none;
   background: linear-gradient(145deg, #f3dc95, #b98a2e 55%, #7a5418); border: 0; box-shadow: 0 2px 6px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 240, 200, .6); }
 .phud > .pt::before { content: ""; position: absolute; left: 50%; top: -9px; width: 12px; height: 9px; transform: translateX(-50%); border-radius: 4px 4px 2px 2px;
   background: linear-gradient(90deg, #8a6220, #f1d58a 50%, #8a6220); box-shadow: 0 -4px 0 -1px #c9a24c; }   /* 竜頭 */
@@ -342,7 +303,7 @@ body.on-puzzle main { max-width: none; padding: 0; }
 .pt .pw-sky::before { content: ""; position: absolute; left: 34%; top: 66%; width: 2px; height: 2px; border-radius: 50%; background: #fff; opacity: .9;
   box-shadow: 9px 5px 0 #fff, 15px -2px 0 rgba(255, 255, 255, .7), 4px 9px 0 rgba(255, 255, 255, .6); }   /* 夜の部分の星 */
 .pt .pw-sky::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: rgba(10, 8, 30, var(--dim, 0)); transition: background 1s linear; }   /* 夕方から暗く */
-.pt .pw-hand { position: absolute; left: 50%; top: 50%; width: 2px; height: 17px; margin-left: -1px; transform-origin: 50% 100%; transform: translateY(-100%) rotate(var(--a, -118deg));
+.pt .pw-hand { position: absolute; left: 50%; top: 50%; width: 2px; height: 20px; margin-left: -1px; transform-origin: 50% 100%; transform: translateY(-100%) rotate(var(--a, -118deg));
   background: #3a2510; border-radius: 2px; transition: transform 1s linear; }
 .pt .pw-hand i { position: absolute; left: 50%; top: -5px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, #fff6c0, #ffc93a 60%, #e08a14); box-shadow: 0 0 5px 1px rgba(255, 200, 60, .8); }   /* 太陽 */
@@ -351,10 +312,12 @@ body.on-puzzle main { max-width: none; padding: 0; }
 .phud > .pt.w1 { box-shadow: 0 2px 6px rgba(0, 0, 0, .45), 0 0 0 2px rgba(240, 150, 60, .75); }
 .phud > .pt.w2, .phud > .pt.w3 { box-shadow: 0 2px 6px rgba(0, 0, 0, .45), 0 0 0 2px rgba(224, 90, 120, .9); }
 .phud > .pt.w3 { animation: pw-beat 1.2s ease-in-out infinite; }
-@media (max-width: 600px) {   /* スマホでは小さめに。上の段に収める */
-  .phud > .pt { width: 40px; height: 40px; margin-top: 0; }
+body.has-watch .play .phud { right: calc(max(12px, env(safe-area-inset-right, 0px)) + 70px); }   /* 時計を右上の角に置き、ほかの表示はその左に並べる */
+@media (max-width: 600px) {   /* スマホでは小さめに */
+  .phud > .pt { width: 46px; height: 46px; top: max(14px, env(safe-area-inset-top, 0px)); }
   .phud > .pt::before { top: -7px; width: 10px; height: 7px; }
-  .pt .pw-sky { inset: 3px; } .pt .pw-hand { height: 13px; } .pt .pw-hand i { width: 7px; height: 7px; margin-left: -3.5px; top: -4px; }
+  .pt .pw-sky { inset: 3px; } .pt .pw-hand { height: 15px; } .pt .pw-hand i { width: 8px; height: 8px; margin-left: -4px; top: -4px; }
+  body.has-watch .play .phud { right: calc(max(12px, env(safe-area-inset-right, 0px)) + 54px); }
 }
 @keyframes pw-beat { 50% { box-shadow: 0 2px 6px rgba(0, 0, 0, .45), 0 0 0 4px rgba(224, 90, 120, .5); } }
 .phud button { cursor: pointer; min-width: 44px; min-height: 32px; font-size: 15px; }
@@ -368,7 +331,6 @@ body.on-puzzle main { max-width: none; padding: 0; }
 }
 /* ---------- 戦闘：謎解きと同じ全画面の作り。盤面を画面いっぱいに、状態は左上と右上、案内は上、コマンドは右下に浮かせる ---------- */
 body.on-battle { background: #171322; }
-body.on-battle .hdr, body.on-battle .sbar { display: none; }
 body.on-battle main { max-width: none; padding: 0; }
 .play[data-mode="battle"] { display: block; position: relative; height: 100vh; height: 100dvh; background: #171322; overflow: hidden; }
 .play[data-mode="battle"] .left { height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -408,7 +370,6 @@ body.on-battle main { max-width: none; padding: 0; }
 /* ---------- ストーリー：全画面（案A）。場面の絵を画面いっぱいに、台詞は下の半透明の枠、状態は右上にバー付きで ---------- */
 :root { --nv-msg-w: 1000px; --nv-msg-min: 150px; }   /* ★ 台詞の枠の最大幅・最低の高さ */
 body.on-novel { background: #171322; }
-body.on-novel .hdr, body.on-novel .sbar { display: none; }
 body.on-novel main { max-width: none; padding: 0; }
 .play[data-mode="novel"] { max-width: none; }
 .play[data-mode="novel"] #cvwrap { position: fixed; inset: 0; z-index: 1; border: 0; border-radius: 0; box-shadow: none; }
@@ -425,9 +386,6 @@ body.on-novel main { max-width: none; padding: 0; }
 /* 状態のバー（カルマ・不安は0〜100、HPは最大値に対する割合） */
 .phud .pg { display: inline-block; width: 44px; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .2); overflow: hidden; }
 .phud .pg > span { display: block; height: 100%; width: 0; border-radius: 99px; transition: width .4s ease; }
-#pg-k { background: linear-gradient(90deg, #a6ae38, #e8a02a); }
-#pg-a { background: linear-gradient(90deg, #8fc3cf, #c98bd1); }
-.phud .pa.hi #pg-a { background: linear-gradient(90deg, #c98bd1, #e05a78); }
 .phud #pg-lh { background: #6cc0e0; } .phud #pg-fh { background: #e8a02a; }
 .phud .low .pg > #pg-lh, .phud .low .pg > #pg-fh { background: #e05a78; }
 @media (max-width: 640px) {
@@ -442,21 +400,6 @@ body.on-novel main { max-width: none; padding: 0; }
 </style>
 
 <div id="app">
-  <header class="hdr"><div class="hdr-in gut">
-    <button class="iconbtn back" id="btn-back" aria-label="タイトルへ戻る" hidden></button>
-    <span class="emb" id="emb" aria-hidden="true"></span>
-    <div class="hdr-grow"><div class="hdr-t" id="hdr-t">Luno's Adventure</div><div class="hdr-s" id="hdr-s"></div></div>
-    <div class="hdr-r"><button class="kbtn sm" id="btn-menu">メニュー</button></div>
-  </div></header>
-
-  <div class="sbar gut" id="sbar" hidden><div class="sbar-in" aria-live="off">
-    <button class="stat" id="st-k" aria-label="カルマ（メニューを開く）"><span>カルマ</span><b id="v-k">20</b><span class="g"><i id="g-k"></i></span></button>
-    <button class="stat a" id="st-a" aria-label="不安（メニューを開く）"><span>不安</span><b id="v-a">20</b><span class="g"><i id="g-a"></i></span></button>
-    <span class="hp" id="st-lh"><span>ルノ</span><b id="v-lh">25</b><span>/<span id="m-lh">25</span></span></span>
-    <span class="hp" id="st-fh"><span>フラメト</span><b id="v-fh">35</b><span>/<span id="m-fh">35</span></span></span>
-    <span class="tm" id="st-t" hidden>時刻<b id="v-t">朝</b></span>
-  </div></div>
-
   <main class="gut">
     <div class="ld" id="ld">ドット絵を読み込んでいます…</div>
 
@@ -477,7 +420,7 @@ body.on-novel main { max-width: none; padding: 0; }
 
     <section class="screen" id="scr-play" hidden>
       <div class="play" id="play" data-mode="novel">
-        <div class="phud" id="phud" aria-live="off"><span class="pk">カルマ <b id="ph-k">20</b><span class="pg"><span id="pg-k"></span></span></span><span class="pa">不安 <b id="ph-a">20</b><span class="pg"><span id="pg-a"></span></span></span><span class="phh pl">ルノ <b id="ph-lh">25</b><span class="pg"><span id="pg-lh"></span></span></span><span class="phh pf">フラメト <b id="ph-fh">35</b><span class="pg"><span id="pg-fh"></span></span></span><span class="pt" id="ph-t" role="img" aria-label="時刻" hidden><span class="pw-sky"></span><span class="pw-hand"><i></i></span><span class="pw-pin"></span></span><button type="button" id="ph-menu" aria-label="メニュー">☰</button></div>
+        <div class="phud" aria-live="off"><span class="phh pl">ルノ <b id="ph-lh">25</b><span class="pg"><span id="pg-lh"></span></span></span><span class="phh pf">フラメト <b id="ph-fh">35</b><span class="pg"><span id="pg-fh"></span></span></span><span class="pt" id="ph-t" role="img" aria-label="時刻" hidden><span class="pw-sky"></span><span class="pw-hand"><i></i></span><span class="pw-pin"></span></span><button type="button" id="ph-menu" aria-label="メニュー">☰</button></div>
         <div class="left">
           <div class="chips" id="chips" aria-live="polite"></div>
           <div class="cvwrap" id="cvwrap"><canvas id="cv" role="img" aria-label="場面の絵"></canvas><div class="banner" id="banner" hidden></div><div class="toasts" id="toasts"></div></div>
@@ -490,7 +433,7 @@ body.on-novel main { max-width: none; padding: 0; }
           </div>
           <div class="choices" id="choices"></div>
           <div class="panel pad" id="pad">
-            <div class="dpad" id="dpad">
+            <div class="dpad">
               <button class="ar u" data-a="U" aria-label="上へ"></button>
               <button class="ar l" data-a="L" aria-label="左へ"></button>
               <button class="ar r" data-a="R" aria-label="右へ"></button>

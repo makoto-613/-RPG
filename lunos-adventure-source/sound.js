@@ -47,7 +47,6 @@
     splash: (t) => noise(t, 0.35, 0.8, 2500), item: (t) => [880, 1175, 1568].forEach((f, i) => tone(t + i * 0.08, f, 0, 0.3, 'sine', 0.6)),
     warn: (t) => tone(t, 300, 200, 0.2, 'square', 0.4),
     // ここから下は、ノベル・戦闘で増えた音
-    tick: (t) => tone(t, 880, 0, 0.025, 'square', 0.08),
     hit: (t) => { noise(t, 0.12, 0.9, 900); tone(t, 220, 90, 0.12, 'sawtooth', 0.6); },
     miss: (t) => tone(t, 500, 250, 0.15, 'triangle', 0.5),
     heal: (t) => [523, 659, 880].forEach((f, i) => tone(t + i * 0.09, f, 0, 0.3, 'sine', 0.6)),

@@ -78,9 +78,6 @@
       g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill(); g.restore();
     }
     function shadow(cx, by, rx, a) { g.save(); g.fillStyle = 'rgba(0,0,0,' + (a == null ? 0.3 : a) + ')'; g.beginPath(); g.ellipse(cx, by - U * 0.04, rx, rx * 0.2, 0, 0, 7); g.fill(); g.restore(); }
-    function rr(x, y, ww, hh, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + ww, y, x + ww, y + hh, r); g.arcTo(x + ww, y + hh, x, y + hh, r); g.arcTo(x, y + hh, x, y, r); g.arcTo(x, y, x + ww, y, r); g.closePath(); }
-    const OUT = '#2a2029';
-    function stroke(lw) { g.lineWidth = lw || Math.max(1.5, U * 0.04); g.strokeStyle = OUT; g.lineJoin = 'round'; g.stroke(); }
 
     /* ---------- 背景：牧草地・家・屋内（ご提供の「牧草地」「祖父母宅・外観／内観」の素材を並べる。空と遠くの丘は canvas） ---------- */
     // 絵を、指定した四角に合わせて描く（縦横の比率は変えてよいとき）

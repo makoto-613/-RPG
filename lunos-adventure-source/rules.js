@@ -25,9 +25,7 @@ window.RULES = {
 window.RULES.callDelta = function (K) { const b = window.RULES.CALL_BAND; for (let i = 0; i < b.length; i++) if (K < b[i][0]) return b[i][1]; return null; };   // null ＝ 呼びかけ不可（カルマ60以上）
 
 window.CHOICES = {
-  enter: { row: 2, sec: 0, label: "廃坑へ入る（ここから20分の計測開始）", K: 0, A: 0, set: { started: true } },
-  crash_check: { row: 3, sec: 1, label: "フラメトが近くにいるか確かめる", K: 0, A: -5 },
-  crash_rush: { row: 4, sec: 1, label: "先に奥へ進もうとする", K: 10, A: 10 },
+  enter: { row: 2, sec: 0, label: "廃坑へ入る", K: 0, A: 0, set: { started: true } },
   cart_flam: { row: 5, sec: 1, label: "フラメトを先に登らせる（カルマ＋10）", K: 10, A: 0 },
   cart_together: { row: 6, sec: 1, label: "二人で協力して登る", K: 0, A: 5, set: { cartFailed: true }, once: true },
   cart_luno: { row: 7, sec: 1, label: "ルノが先導して登る", K: 0, A: 0 },
@@ -40,7 +38,6 @@ window.CHOICES = {
   cent_chase: { row: 14, sec: 3, label: "追撃する（カルマ＋15）", K: 15, A: 0 },
   mirror_e: { row: 15, sec: 4, label: "反射鏡を東向きに回す（主光路）", K: 0, A: 0, puzzle: true },
   mirror_n: { row: 16, sec: 4, label: "反射鏡を北向きに回す（細い光路）", K: 0, A: 0, puzzle: true },
-  mirror_s: { row: 17, sec: 4, label: "鏡を南向きに回してみる", K: 0, A: 2, puzzle: true },
   hidden_look: { row: 18, sec: 4, label: "開いた隠し部屋を調べる", K: 0, A: 0 },
   journal_take: { row: 19, sec: 4, label: "日誌の切れ端と、水晶のかけらを手に取る", K: 0, A: 0, set: { crystalJournal: true, crystal: true } },
   door_go: { row: 20, sec: 4, label: "開いた通常の扉から先に進む", K: 0, A: 0 },

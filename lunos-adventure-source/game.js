@@ -47,7 +47,7 @@
   let titleStage = null;   // タイトル画面の背景（廃坑の入口）を描くもの
   let menuOpen = false;
 
-  const hud = () => { if (S) UI.hud({ K: S.K, A: S.A, lh: S.lh, fh: S.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }); };
+  const hud = () => { if (S) UI.hud({ lh: S.lh, fh: S.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }); };
 
   /* ---------------- 選択肢の効果 ---------------- */
   // 表の選択肢（CHOICES）を選んだときの変化を、まとめて反映する。札（トースト）で変化を見せる
@@ -77,9 +77,7 @@
   // 選択肢の見た目（表のラベル＋HPなどの札）。off に理由を入れると、灰色で選べない
   function optFor(it, off) {
     if (typeof it === 'object') return it;
-    const c = CHOICES[it], tags = [];
-    const dK = c.K || 0, dA = c.band ? (RULES.callDelta(S.K) || 0) : (c.A || 0);
-    void dK; void dA;   // カルマ・不安の増減は、プレイヤーには見せない（数字ではなく気持ちで選んでもらうため）
+    const c = CHOICES[it], tags = [];   // カルマ・不安の増減は、プレイヤーには見せない（数字ではなく気持ちで選んでもらうため）
     if (c.hp && c.hp.flam) tags.push(['フラメトHP' + signed(c.hp.flam), 'ok']);
     if (c.once) tags.push(['初回のみ', 'once']);
     return { id: it, label: plainLabel(c.label), tags, off };
@@ -113,10 +111,6 @@
     }
   }
   function setMode(m) { UI.mode(m); if (m === 'novel') $('chips').innerHTML = ''; }
-  function setHeader() {
-    const s = STORY.sec[S.sec];
-    UI.header(STORY.title, S.sec === 0 ? '序章' : '区画' + s.no + '　' + s.name, s.kind);
-  }
 
   /* ---------------- 展示タイマー（表：20分／残り5分・2分・30秒・0秒に特別処理） ---------------- */
   const T = { on: false, rem: 0, last: 0, fired: {}, id: null };
@@ -158,7 +152,7 @@
   }
 
   /* ---------------- 区画ごとの進行（sections.js） ---------------- */
-  const SECS = window.makeSections({ get S() { return S; }, get stage() { return stage; }, P, RULES, UI, apply, ask, optFor, play, setMode, sfx, bgm, hud, signed, timerStart, toTitle, battleHelp });
+  const SECS = window.makeSections({ get S() { return S; }, get stage() { return stage; }, P, RULES, UI, apply, ask, play, setMode, sfx, bgm, hud, signed, timerStart, toTitle, battleHelp });
 
   /* ---------------- 進行の起動・中断 ---------------- */
   function closeAll() { UI.kill(); Puzzle.stop(); Battle.stop(); UI.clearOverlays(); UI.closeVeil(); menuOpen = false; }
@@ -174,7 +168,7 @@
       while (next) {
         UI.guard(run);
         if (next.end) { await playEnding(run, next.end); return; }
-        S.sec = next.go; setHeader(); hud();
+        S.sec = next.go; hud();
         if (S.sec >= 1) {
           save();
           const o = next.o || {};
@@ -221,7 +215,7 @@
     begin({ go: 0 });
   }
   function toTitle() {
-    closeAll(); timerStop(); UI.timer(null); UI.screen('title'); bgm('title'); UI.header(STORY.title, STORY.sub, '');
+    closeAll(); timerStop(); UI.timer(null); UI.screen('title'); bgm('title');
     renderTitle();
   }
   function jumpTo(n) {   // 確認用：区画へ直接行く（持ち物などは、その区画に必要な最小限だけ整える）
@@ -396,8 +390,6 @@
     stage = Stage.create($('cv')); Puzzle.init($('cv')); Battle.init($('cv'));
     titleStage = Stage.create($('cv-title'), { cover: true }); titleStage.change({ sc: 'mine_gate' });
     bindPointers();
-    $('btn-menu').onclick = openMenu; $('st-k').onclick = openMenu; $('st-a').onclick = openMenu;
-    $('btn-back').onclick = () => { sfx('click'); confirmDlg('タイトルへ戻ります。進み具合は、区画のはじめに自動で保存されています。', 'タイトルへ', toTitle); };
     $('btn-new').onclick = () => newGame('free'); $('btn-expo').onclick = () => newGame('expo'); $('btn-cont').onclick = continueGame; $('btn-tmenu').onclick = openMenu; $('ph-menu').onclick = openMenu;
     $('veil').addEventListener('pointerdown', (e) => { if (e.target === $('veil') && menuOpen) { menuOpen = false; UI.closeVeil(); } });
     toTitle();

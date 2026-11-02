@@ -35,7 +35,6 @@
     MEMO_GRAY: 0.85,       // 回想の場面で、色を抜く強さ（0〜1）
     MEMO_TINT: 'rgb(246,214,170)',   // 回想の場面の、セピアの色
     DESK_S: 1.2,           // 隠し部屋の机の大きさ
-    DESK_TOP: 0.34,        // 机の絵で、天板の高さ（上から0〜1）。日誌と水晶をのせる位置
     ALTAR_Y: 0.68,         // 命の祭壇の台の足元の高さ（画面比）
     ALTAR_S: 1.3,         // 命の祭壇の台の大きさ
     ITEM_MS: 2200,         // 品物（日誌・包帯など）を画面に見せておく時間（ミリ秒）
@@ -49,8 +48,8 @@
   };
   const POSE = {   // ポーズ名 → 絵の名前（アトラス）。story.js ではこの短い名前を使う
     luno: { idle: 'luno_idle', determined: 'luno_determined', examine: 'luno_examine', worried: 'luno_worried', surprised: 'luno_surprised', sad: 'luno_sad', down: 'luno_down', read: 'luno_read', heal: 'luno_heal' },   // down＝立ったまま項垂れる／read＝本を読む／heal＝しゃがんで手当てする
-    // sad・sit_sad＝頭を下げて項垂れる（顔の表情ではなく、しぐさで気持ちを見せる）／lie_sad＝目を閉じて伏せる／hurt＝けが（傷あり）／sit_b＝おすわり（前足に包帯）
-    flam: { idle: 'flam_idle', sit: 'flam_sit', happy: 'flam_happy', bark: 'flam_bark', sniff: 'flam_sniff', guard: 'flam_guard', injured: 'flam_injured', lie: 'flam_lie', sad: 'flam_sad', sit_sad: 'flam_sad', lie_sad: 'flam_lie_sad', hurt: 'flam_injured_w', sit_b: 'flam_sit_b' }
+    // sad・sit_sad＝頭を下げて項垂れる（顔の表情ではなく、しぐさで気持ちを見せる）／lie_sad＝目を閉じて伏せる
+    flam: { idle: 'flam_idle', sit: 'flam_sit', happy: 'flam_happy', bark: 'flam_bark', sniff: 'flam_sniff', guard: 'flam_guard', injured: 'flam_injured', lie: 'flam_lie', sad: 'flam_sad', sit_sad: 'flam_sad', lie_sad: 'flam_lie_sad' }
   };
   const SETS = {
     mine: { f: 'mine_floor', fi: [0, 3, 0, 0, 3, 3, 0, 3, 0, 3, 1, 0], w: 'mine_wall', wi: [0, 1, 2, 3, 4, 5], natural: true },   // natural：岩の壁・床。マス目を見せずに、なめらかに敷く

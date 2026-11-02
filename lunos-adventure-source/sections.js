@@ -13,7 +13,7 @@
   };
 
   window.makeSections = function (G) {
-    const { P, RULES, UI, apply, ask, optFor, play, setMode, sfx, bgm, hud, signed, timerStart, toTitle, battleHelp } = G;
+    const { P, RULES, UI, apply, ask, play, setMode, sfx, bgm, hud, signed, timerStart, toTitle, battleHelp } = G;
     const Puzzle = window.Puzzle, Battle = window.Battle;
     let S = null, stage = null;
     const HERD_AT = TUNE_SEC.HERD_AT;   // 今の進行と、ノベルの場面を描くもの（区画を始めるときに game.js から受け取る）
@@ -29,11 +29,7 @@
       setMode('novel');
       await play(run, P.s0_herded);
       await play(run, P.s0.slice(HERD_AT));
-      const enter = optFor('enter');
-      enter.label = '廃坑へ入る'; enter.tags = [];   // ボタンには説明書きを出さない（展示モードの20分の計測は、タイトル画面で案内している）
-      UI.showLine(P.s0_ask, false);
-      await UI.choose(run, [enter]);
-      apply('enter');
+      apply(await ask(run, P.s0_ask, ['enter']));
       if (S.mode === 'expo') timerStart(RULES.TIMER_SEC);   // 序章→区画1：20分の計測を始める
       return { go: 1 };
     }
@@ -112,7 +108,7 @@
       await battleHelp(); UI.guard(run);   // はじめての戦闘の前だけ、戦い方を見せる
       const r = await Battle.start(run, Object.assign({
         kind, diff: S.diff, luHP: S.lh, flHP: S.fh, A: S.A, K: S.K, stones: 3,
-        onHud: (v) => UI.hud({ K: S.K, A: v.A, lh: v.lh, fh: v.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }),
+        onHud: (v) => UI.hud({ lh: v.lh, fh: v.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }),
         onTitle: () => toTitle()
       }, extra));
       UI.guard(run);
@@ -194,7 +190,6 @@
       const id = await ask(run, P.s5_ask, ['diary_read', 'diary_skip']);
       apply(id);
       await play(run, P.s5_res[id]);
-      await play(run, P.s5_stairs);
       return { go: 6 };
     }
 

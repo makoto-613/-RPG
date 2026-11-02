@@ -38,7 +38,18 @@ const uri = (f) => 'data:' + mime[path.extname(f)] + ';base64,' + fs.readFileSyn
 /* 音：手元・ダウンロード用は埋め込み、公開用は audio/ フォルダから読む */
 const AUD = path.join(D, 'assets/audio'), amime = { '.mp3': 'audio/mpeg', '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.m4a': 'audio/mp4' };
 const embedded = {}; (fs.existsSync(AUD) ? fs.readdirSync(AUD) : []).forEach((f) => { const m = amime[path.extname(f).toLowerCase()]; if (m) embedded[f] = 'data:' + m + ';base64,' + fs.readFileSync(path.join(AUD, f)).toString('base64'); });
-const blobs = fs.existsSync(path.join(D, 'audio_blobs.json')) ? JSON.parse(rd('audio_blobs.json')) : embedded;
+// 公開用の音の置き場所の表（audio_blobs.json：音のファイル名 → 公開ページと一緒に置く場所）。
+// assets/audio に新しい音を足すと、ここで dist/audio/ に写して表に書き足す（日本語の名前は se_番号 にする）
+const BLOBS = path.join(D, 'audio_blobs.json');
+const blobs = fs.existsSync(BLOBS) ? JSON.parse(rd('audio_blobs.json')) : {};
+const newBlobs = Object.keys(embedded).filter((f) => !blobs[f]);
+newBlobs.forEach((f) => {
+  let rel = 'audio/' + f;
+  if (!/^[\x21-\x7e]+$/.test(f)) { const used = new Set(Object.values(blobs)); for (let n = 1; used.has(rel = 'audio/se/se_' + String(n).padStart(2, '0') + path.extname(f)); n++); }
+  fs.mkdirSync(path.dirname(path.join(D, 'dist', rel)), { recursive: true }); fs.copyFileSync(path.join(AUD, f), path.join(D, 'dist', rel));
+  blobs[f] = rel;
+});
+if (newBlobs.length) { fs.writeFileSync(BLOBS, JSON.stringify(blobs, null, 1) + '\n'); console.log('公開用の音を足しました（公開のときに一緒に置く）:', newBlobs.map((f) => blobs[f]).join(', ')); }
 
 /* 部品を <script> にして並べる。audioFiles：音のファイル名 → 読む場所 */
 function scripts(audioFiles) {

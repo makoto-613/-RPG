@@ -45,7 +45,7 @@ node test/run_all.js     # 自動テストをすべて動かす（数分かか�
 - 謎解きの盤面：`levels.js` の easy／normal／hard（変えたら `node test/levels_check.js` で解けるか確かめる）。目標とヒントの文は `story.js` の `puz`（難易度ごとの文は `diff`）
 - 難易度の名前と説明：`story.js` の `diffs`
 - 戦闘の数値：`battle_rules.js` の先頭の `BT`。難易度ごとの敵の強さは `ENEMY_DIFF`
-- BGM・効果音：BGM・効果音シート → `tools/make_audio_js.py` か `tools/audio_from_dump.py`、音のファイルは `assets/audio/`
+- BGM・効果音：BGM・効果音シート → `tools/make_audio_js.py` か `tools/audio_from_dump.py`、音のファイルは `assets/audio/`（新しい音を足すと、`node build.js` が公開用の置き場所 `dist/audio/` と `audio_blobs.json` に自動で書き足します）
 
 各ファイルの先頭に「★ 調整用の数値」があり、日本語のコメント付きで数値だけ変えられます。
 

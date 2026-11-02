@@ -1,5 +1,5 @@
 /* ==========================================================================
-   shell.js ― 画面の部品（台詞パネル・選択肢・ダイアログ・状態の帯・お知らせ）と、「やめるときに安全に止められる待ち方」
+   shell.js ― 画面の部品（台詞パネル・選択肢・ダイアログ・右上の状態表示・お知らせ）と、「やめるときに安全に止められる待ち方」
    ゲームの進み方は game.js・sections.js、謎解きは puzzle.js、戦闘は battle.js が受け持ち、この部品を使います。
    ========================================================================== */
 (function () {
@@ -10,8 +10,7 @@
     TYPE_MS: 22,          // 台詞が1文字出るまでの時間（ミリ秒）。0 にすると一気に表示
     DLG_GUARD_MS: 450,    // 結末などのダイアログが開いた直後は Enter／Space／ボタンのタップを無視する時間（連打で読み飛ばさないため）
     BANNER_MS: 4200,      // 画面上部のお知らせ（タイマーの注意など）を出しておく時間
-    TOAST_MAX: 4,         // 画面の隅に出す「カルマ＋10」などの札の最大数
-    ANX_HI: 60,           // 不安がこの値以上になると、右上の不安のバーを赤っぽくする
+    TOAST_MAX: 4,         // 画面の隅に出す「ルノ HP −3」などの札の最大数
     HP_LOW: 0.3           // HP が最大値のこの割合以下になると、右上のHPのバーを赤くする
   };
 
@@ -89,54 +88,36 @@
     }).then((id) => { guard(run); return id; });
   }
 
-  /* ---------------- 画面・モード・見出し ---------------- */
-  function setSub(a, b) {
-    const s = $('hdr-s'); s.textContent = '';
-    const x = document.createElement('span'); x.textContent = a; s.appendChild(x);
-    if (b) { const y = document.createElement('span'); y.textContent = ' ｜ ' + b; s.appendChild(y); }
+  /* ---------------- 画面・モード ---------------- */
+  // body の on-title／on-novel／on-puzzle／on-battle で、画面ごとの見た目（CSS）を切り替える。どの遊びの画面も全画面
+  function syncBody() {
+    const play = !$('scr-play').hidden, m = $('play').dataset.mode;
+    document.body.classList.toggle('on-title', !$('scr-title').hidden);
+    ['novel', 'puzzle', 'battle'].forEach((k) => document.body.classList.toggle('on-' + k, play && m === k));
   }
   function screen(name) {
     $('ld').hidden = true;
     $('scr-title').hidden = name !== 'title'; $('scr-play').hidden = name !== 'play';
-    document.body.classList.toggle('on-title', name === 'title');
-    document.body.classList.toggle('on-puzzle', name === 'play' && $('play').dataset.mode === 'puzzle');
-    document.body.classList.toggle('on-battle', name === 'play' && $('play').dataset.mode === 'battle');
-    document.body.classList.toggle('on-novel', name === 'play' && $('play').dataset.mode === 'novel');
-    $('btn-back').hidden = name !== 'play'; $('emb').hidden = name === 'play';
-    $('sbar').hidden = name !== 'play';
+    syncBody();
     window.scrollTo(0, 0);
   }
   // ノベルの場面では、台詞の枠と選択肢を、場面の絵の上に半透明で重ねる（謎解き・戦闘では、盤面が隠れないよう横に戻す）
   function mode(m) {
     $('play').dataset.mode = m;
-    document.body.classList.toggle('on-puzzle', m === 'puzzle');   // 謎解きは全画面（案C）
-    document.body.classList.toggle('on-battle', m === 'battle');   // 戦闘も、謎解きと同じ全画面
-    document.body.classList.toggle('on-novel', m === 'novel' && !$('scr-play').hidden);   // ストーリーも全画面（案A）
+    syncBody();
     const wrap = $('cvwrap'), msg = $('msg'), ch = $('choices'), side = document.querySelector('#play .side');
     if (m === 'novel' && msg.parentNode !== wrap) { wrap.appendChild(ch); wrap.appendChild(msg); }
     else if (m !== 'novel' && msg.parentNode === wrap) { side.insertBefore(msg, side.firstChild); side.insertBefore(ch, msg.nextSibling); }
   }
   const getMode = () => $('play').dataset.mode;
-  function header(title, sub1, sub2) { $('hdr-t').textContent = title; setSub(sub1 || '', sub2 || ''); }
 
-  /* ---------------- 状態の帯（カルマ・不安・HP・残り時間） ---------------- */
-  const prevHud = {};
+  /* ---------------- 右上の状態表示（ルノ・フラメトのHP） ---------------- */
   function hud(v) {
-    const set = (key, id, val, wrapId) => {
-      const el = $(id); if (el.textContent !== String(val)) { el.textContent = val; if (prevHud[key] != null && wrapId) { const w = $(wrapId); w.classList.remove('bump'); void w.offsetWidth; w.classList.add('bump'); } }
-      prevHud[key] = val;
-    };
-    set('K', 'v-k', v.K, 'st-k'); set('A', 'v-a', v.A, 'st-a'); set('lh', 'v-lh', v.lh, 'st-lh'); set('fh', 'v-fh', v.fh, 'st-fh');
-    $('m-lh').textContent = v.lmax; $('m-fh').textContent = v.fmax;
-    $('ph-k').textContent = v.K; $('ph-a').textContent = v.A; $('ph-lh').textContent = v.lh; $('ph-fh').textContent = v.fh;
-    // 右上の状態表示のバー（カルマ・不安は0〜100、HPは最大値に対する割合）
-    const pct = (a, b) => clamp(b ? (a / b) * 100 : a, 0, 100) + '%';
-    $('pg-k').style.width = pct(v.K); $('pg-a').style.width = pct(v.A);
+    $('ph-lh').textContent = v.lh; $('ph-fh').textContent = v.fh;
+    const pct = (a, b) => clamp((a / b) * 100, 0, 100) + '%';
     $('pg-lh').style.width = pct(v.lh, v.lmax); $('pg-fh').style.width = pct(v.fh, v.fmax);
-    $('ph-a').parentNode.classList.toggle('hi', v.A >= TUNE_UI.ANX_HI);
     $('ph-lh').parentNode.classList.toggle('low', v.lh <= v.lmax * TUNE_UI.HP_LOW);
     $('ph-fh').parentNode.classList.toggle('low', v.fh <= v.fmax * TUNE_UI.HP_LOW);
-    $('g-k').style.width = clamp(v.K, 0, 100) + '%'; $('g-a').style.width = clamp(v.A, 0, 100) + '%';
   }
   /* 展示モードの残り時間を、懐中時計（朝→昼→夕方→夜）で見せる。正確な分・秒は画面に出さない */
   const WATCH = {
@@ -149,11 +130,10 @@
     return { p, word };
   }
   function timer(sec) {
-    const t = $('st-t');
     const pt = $('ph-t');
-    if (sec == null) { t.hidden = true; pt.hidden = true; return; }
+    document.body.classList.toggle('has-watch', sec != null);   // 時計を出している間は、ほかの表示を左へずらす
+    if (sec == null) { pt.hidden = true; return; }
     const d = dayPhase(sec), wc = sec <= 30 ? ' w3' : sec <= 120 ? ' w2' : sec <= 300 ? ' w1' : '';
-    t.hidden = false; $('v-t').textContent = d.word; t.className = 'tm' + wc;
     pt.hidden = false; pt.className = 'pt' + wc + (d.p >= WATCH.MOON_AT ? ' moon' : '');
     pt.style.setProperty('--a', (WATCH.FROM + (WATCH.TO - WATCH.FROM) * d.p).toFixed(2) + 'deg');
     pt.style.setProperty('--dim', (Math.max(0, d.p - 0.6) / 0.4 * 0.45).toFixed(3));   // 夕方から、文字盤が少しずつ暗くなる
@@ -184,6 +164,6 @@
   $('dlg').addEventListener('click', (e) => { if (inGuard() && e.target.closest('button')) { e.preventDefault(); e.stopPropagation(); } }, true);
   function closeVeil() { $('veil').hidden = true; }
 
-  Object.assign(UI, { dayPhase, showLine, sys, advance, waiting, stopType, newRun, guard, kill, say, sayAll, wait, until, choose, screen, mode, getMode, header, setSub, hud, timer, banner, toast, clearOverlays, fadeBlack, openDlg, closeVeil, dlgOpen, inGuard });
+  Object.assign(UI, { dayPhase, showLine, sys, advance, waiting, stopType, newRun, guard, kill, say, sayAll, wait, until, choose, screen, mode, getMode, hud, timer, banner, toast, clearOverlays, fadeBlack, openDlg, closeVeil, dlgOpen, inGuard });
   window.UI = UI;
 })();
