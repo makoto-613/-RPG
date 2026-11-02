@@ -108,7 +108,13 @@
       await battleHelp(); UI.guard(run);   // はじめての戦闘の前だけ、戦い方を見せる
       const r = await Battle.start(run, Object.assign({
         kind, diff: S.diff, luHP: S.lh, flHP: S.fh, A: S.A, K: S.K, stones: 3,
-        onHud: (v) => UI.hud({ lh: v.lh, fh: v.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }),
+        onHud: (v) => {
+          // 画面のHPだけでなく保存対象のHP・不安も同時に更新する
+          S.lh = Math.max(0, Math.min(RULES.LUNO_HP, v.lh));
+          S.fh = Math.max(0, Math.min(RULES.FLAM_HP, v.fh));
+          S.A = Math.max(0, Math.min(100, v.A));
+          hud();
+        },
         onTitle: () => toTitle()
       }, extra));
       UI.guard(run);

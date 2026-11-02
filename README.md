@@ -67,3 +67,13 @@ node test/run_all.js     # 自動テストをすべて動かす（数分かか�
 - `snapshot.js` と `snapcmp.py`：時間と乱数を止めて全場面を撮り、作り直す前と後を比べる（`node test/snapshot.js 出力先` → `python3 test/snapcmp.py 前 後`）
 - `allscenes.js`：物語の全場面を撮る（`node test/allscenes.js 1280 800 pc`）
 - `sim.js`：戦闘のバランスを、何回も戦わせて確かめる（`node test/sim.js boss 20 20 hard` のように難易度も指定できる）
+
+## 2026年 改修版
+
+変更点・検証範囲については [`IMPROVEMENTS.md`](IMPROVEMENTS.md) を参照。ブラウザから開く場合は `dist/standalone.html` を使います。
+
+```
+node test/improvement_check.js
+node test/levels_check.js
+node test/rules_node.js
+```

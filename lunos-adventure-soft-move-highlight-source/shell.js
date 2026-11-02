@@ -26,6 +26,14 @@
 
   /* ---------------- 台詞パネル ---------------- */
   const MS = { timer: null, full: '', done: true, res: null, i: 0 };
+  let skipMessages = false;
+  function setSkip(on) {
+    skipMessages = !!on;
+    const b = $('btn-skip');
+    if (b) { b.setAttribute('aria-pressed', String(skipMessages)); b.textContent = '▶▶ 会話スキップ：' + (skipMessages ? 'ON' : 'OFF'); }
+    if (skipMessages && MS.res) { if (!MS.done) finishType(); advance(); }
+    return skipMessages;
+  }
   function stopType() { if (MS.timer) { clearInterval(MS.timer); MS.timer = null; } }
   function finishType() { stopType(); $('mtext').textContent = MS.full; keepBottom(); MS.done = true; if (MS.res) $('nxt').hidden = false; }
   const lineFace = (l) => l.face || (l.w === 'luno' ? (/！/.test(l.t) ? 'luno_determined' : 'luno_idle') : l.w === 'flam' ? 'flam_idle' : null);
@@ -56,14 +64,17 @@
   const waiting = () => !!MS.res;
 
   /* ---------------- 進行の道具（やめるときに安全に止められる待ち方） ---------------- */
-  function newRun() { const r = { dead: false, pend: [] }; UI.run = r; return r; }
+  function newRun() { setSkip(false); const r = { dead: false, pend: [] }; UI.run = r; return r; }
   function guard(run) { if (run.dead) throw CANCEL; }
   function kill() {
     const r = UI.run; if (!r) return;
     r.dead = true; MS.res = null; stopType(); if (window.Sound.cutSe) window.Sound.cutSe(0.15); $('nxt').hidden = true; $('choices').innerHTML = '';
     const p = r.pend; r.pend = []; p.forEach((f) => { try { f(); } catch (e) { /* 無視 */ } });
   }
-  function say(run, l) { return new Promise((res) => { guard(run); showLine(l, true); MS.res = res; run.pend.push(res); }).then(() => guard(run)); }
+  function say(run, l) {
+    if (skipMessages) { guard(run); showLine(l, false); return Promise.resolve().then(() => guard(run)); }
+    return new Promise((res) => { guard(run); showLine(l, true); MS.res = res; run.pend.push(res); }).then(() => guard(run));
+  }
   async function sayAll(run, ls) { for (const l of ls) await say(run, l); }
   function wait(run, ms) { return new Promise((res) => { guard(run); const id = setTimeout(res, ms); run.pend.push(() => { clearTimeout(id); res(); }); }).then(() => guard(run)); }
   async function until(run, pred, max) { const t0 = nowMs(); while (!pred()) { await wait(run, 30); if (nowMs() - t0 > (max || 6000)) break; } }
@@ -72,6 +83,7 @@
   function choose(run, opts) {
     return new Promise((res) => {
       guard(run);
+      setSkip(false); // 選択肢を勝手に飛ばさない
       const box = $('choices'); box.innerHTML = '';
       opts.forEach((o, i) => {
         const b = document.createElement('button'); b.type = 'button'; b.className = 'ch'; b.dataset.id = o.id;
@@ -164,6 +176,6 @@
   $('dlg').addEventListener('click', (e) => { if (inGuard() && e.target.closest('button')) { e.preventDefault(); e.stopPropagation(); } }, true);
   function closeVeil() { $('veil').hidden = true; }
 
-  Object.assign(UI, { dayPhase, showLine, sys, advance, waiting, stopType, newRun, guard, kill, say, sayAll, wait, until, choose, screen, mode, getMode, hud, timer, banner, toast, clearOverlays, fadeBlack, openDlg, closeVeil, dlgOpen, inGuard });
+  Object.assign(UI, { setSkip, getSkip: () => skipMessages, dayPhase, showLine, sys, advance, waiting, stopType, newRun, guard, kill, say, sayAll, wait, until, choose, screen, mode, getMode, hud, timer, banner, toast, clearOverlays, fadeBlack, openDlg, closeVeil, dlgOpen, inGuard });
   window.UI = UI;
 })();

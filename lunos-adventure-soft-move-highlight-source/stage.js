@@ -229,6 +229,11 @@
       const set = SETS[P.set || 'mine'], hz = (P.horizon || ST.HORIZON) * h;
       // 壁と床：岩の場所は「はんこ」でなめらかに、祭壇などの石組みはタイルのまま（動かないので、一度描いて取っておく）
       layer('cave|' + (S.specName || '') + '|' + (P.set || 'mine'), (cx) => {
+        // スタンプ描画の間に透明ピクセルが残らないよう、壁と床を先に不透明色で塗りつぶす。
+        cx.fillStyle = P.set === 'crys' ? '#232f42' : P.set === 'altar' ? '#312735' : '#2b2b35';
+        cx.fillRect(0, 0, w, HB);
+        cx.fillStyle = P.set === 'crys' ? '#293f55' : '#1a1829';
+        cx.fillRect(0, 0, w, hz);
         if (set.natural) {
           stampFill(cx, names(set.w, set.wi), 0, 0, w, hz + U * 0.35, 7, true);
           stampFill(cx, names(set.f, set.fi), 0, hz - U * 0.1, w, HB, 3, true);
@@ -239,6 +244,11 @@
           for (let y = Math.floor(hz / U); y * U < HB; y++) for (let x = 0; x < 12; x++) t2(set.f + set.fi[hsh(x, y) % set.fi.length], x * U, Math.max(y * U, hz - U * 0.2));
           cx.fillStyle = 'rgba(0,0,0,.28)'; cx.fillRect(0, hz - U * 0.06, w, U * 0.12);
         }
+        // 壁と床の境界を、厚みのある石の幅木として統一
+        const edgeY = hz - U * 0.09;
+        cx.fillStyle = 'rgba(9,8,17,.78)'; cx.fillRect(0, edgeY, w, U * 0.18);
+        cx.fillStyle = 'rgba(194,178,154,.28)'; cx.fillRect(0, edgeY, w, Math.max(1, U * 0.035));
+        cx.fillStyle = 'rgba(0,0,0,.35)'; cx.fillRect(0, edgeY + U * 0.18, w, Math.max(1, U * 0.04));
         const wg = cx.createLinearGradient(0, 0, 0, hz); wg.addColorStop(0, 'rgba(6,4,14,.62)'); wg.addColorStop(0.6, 'rgba(6,4,14,.18)'); wg.addColorStop(1, 'rgba(6,4,14,.05)'); cx.fillStyle = wg; cx.fillRect(0, 0, w, hz);
       });
       // 水路：奥と手前は水、人物の立つあたりは乾いた石の通路（人物が水の上に立たないように）
@@ -417,7 +427,10 @@
     /* ---------- 1フレーム ---------- */
     function frame(now) {
       resize();
-      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, canvas.width, canvas.height); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      // 背景を不透明にする。透明素材の隙間からHTMLの白が見える現象を防ぐ。
+      g.fillStyle = '#171523'; g.fillRect(0, 0, canvas.width, canvas.height);
+      g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
       const P = S.spec; if (!P) { g.fillStyle = '#000'; g.fillRect(0, 0, w, HB); return; }
       if (!opt.cover) camera();
       g.save(); g.translate(OX, OY);   // 縦長の画面では、人物がいるあたりを見せる（camera）

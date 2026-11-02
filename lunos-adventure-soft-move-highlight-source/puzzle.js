@@ -92,6 +92,7 @@
     const s = P.s, L = P.L, sid = P.sid, p = P.M.prep(L), out = [];
     const c = (t, cls) => out.push('<span class="chip ' + (cls || '') + '">' + t + '</span>');
     c('手数 ' + P.moves);
+    c(P.sid === 's7' ? '青枠：進める／金：燭台／暗い床：未照明' : '青枠：進める／金：仕掛け／赤×：通れない');
     if (sid === 's0') {
       const m = P.M.prep(L).sheep.length; c('小屋の羊 ' + s.inn + '／' + m, s.inn === m ? 'good' : '');
     } else if (sid === 's1') {
@@ -118,12 +119,23 @@
     if (!r.changed) { onBump(r, who); return; }
     P.hist.push({ s: prev, moves: P.moves }); if (P.hist.length > 500) P.hist.shift();
     P.s = r.s; P.moves++;
+    // 勝利直後は最後の操作をやり直せる直前の状態で保存する
+    if (window.__autoSaveProgress) {
+      const won = r.ev.some((e) => e.t === 'win');
+      window.__autoSaveProgress('puzzle', {
+        sid: P.sid, puzzleS: won ? prev : P.s,
+        moves: won ? P.moves - 1 : P.moves,
+        hist: won ? P.hist.slice(0, -1) : P.hist.slice(-80),
+        flags: Object.assign({}, P.flags)
+      });
+    }
     V.luno.tx = r.s.px; V.luno.ty = r.s.py;
     if (r.moved) { V.flam.tx = prev.px; V.flam.ty = prev.py; }
     const tasks = [];
     handleEvents(r.ev, prev, r.s, tasks, a);
     updateChips();
     if (tasks.length) runTasks(tasks);
+    else if (!r.ev.some((e) => e.t === 'win')) savePuzzle();
   }
   function onBump(r, who) {
     who.shk = nowMs() + TUNE_P.BUMP_MS;
@@ -136,7 +148,7 @@
     (async () => {
       try { for (const t of tasks) { await t(run, api); } }
       catch (e) { if (e !== CANCEL) { console.error(e); } }
-      finally { if (P.run === run && !run.dead) P.busy = false; }
+      finally { if (P.run === run && !run.dead) { P.busy = false; savePuzzle(); } }
     })();
   }
 
@@ -184,14 +196,21 @@
     });
   }
 
+  function savePuzzle() {
+    if (window.__autoSaveProgress && P.active) window.__autoSaveProgress('puzzle', {
+      sid: P.sid, puzzleS: P.s, moves: P.moves, hist: P.hist.slice(-80), flags: P.flags
+    });
+  }
   /* ---------------- 戻す・やり直し・ヒント・答え ---------------- */
   function undo() {
     if (P.busy || !P.active || !P.hist.length) return;
-    const h = P.hist.pop(); P.s = h.s; P.moves = h.moves; P.flags.lastLit = null; syncVis(true); updateChips(); sfx('click'); sys('ひとつ戻した。');
+    const h = P.hist.pop(); P.s = h.s; P.moves = h.moves; P.flags.lastLit = null;
+    syncVis(true); updateChips(); savePuzzle(); sfx('click'); sys('ひとつ戻した。');
   }
   function reset() {
     if (P.busy || !P.active) return;
-    P.s = core.cl(P.base); P.hist = []; P.moves = 0; P.flags.lastLit = null; syncVis(true); updateChips(); sfx('click'); sys('やり直した。');
+    P.s = core.cl(P.base); P.hist = []; P.moves = 0; P.flags.lastLit = null;
+    syncVis(true); updateChips(); savePuzzle(); sfx('click'); sys('やり直した。');
   }
   function hint() {
     if (P.busy || !P.active) return;
@@ -253,11 +272,19 @@
     P.run = run; P.sid = sid; P.L = (sid === 's0' ? LEVELS.easy : LEVELS[P.diff])[sid]; P.M = MODS[sid]; P.hooks = hooks || {};   // 序章の羊追いは、難易度に関わらず同じ盤面
     P.s = P.M.init(P.L); P.base = core.cl(P.s); P.hist = []; P.moves = 0; P.fx = []; P.shake = null; P.fade = null; P.done = false;
     P.flags = { c03: null, swKnown: false, hintN: 0, lastLit: null };
+    const saved = window.__takeGameResume && window.__takeGameResume('puzzle', sid);
+    if (saved && saved.puzzleS && Number.isInteger(saved.puzzleS.px) && Number.isInteger(saved.puzzleS.py)) {
+      P.s = core.cl(saved.puzzleS);
+      P.moves = Math.max(0, saved.moves || 0);
+      P.hist = Array.isArray(saved.hist) ? saved.hist.slice(-80) : [];
+      P.flags = Object.assign(P.flags, saved.flags || {});
+      UI.banner('途中の謎解きから再開しました', 'good', 2600);
+    }
     P.vis = { luno: mkEnt(0, 0, 'U'), flam: mkEnt(0, 0, 'U'), trolley: { x: 0, tx: 0 }, bags: [], sheep: [] };
     syncVis(true);
     updateChips(); $('choices').innerHTML = '';
     P.busy = false; P.active = true;
-    idle();
+    savePuzzle(); idle();
     return new Promise((res) => { P.res = res; run.pend.push(res); }).then(() => UI.guard(run));
   }
   function finish() { P.active = false; P.busy = false; const r = P.res; P.res = null; if (r) r(); }

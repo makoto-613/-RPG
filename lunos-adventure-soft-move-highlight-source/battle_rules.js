@@ -74,7 +74,7 @@
     miss: () => 'ルノの手が震えて、攻撃がはずれてしまった……。',
     guard: 'ルノは身を固めて、敵の攻撃に備えた。',
     calm: () => 'ルノは深く息をはいた。少し落ち着いた。',
-    call: () => 'ルノはフラメトに呼びかけた。心が少し落ち着く。',
+    call: () => 'ルノの声が届いた！ フラメトは敵を追うのをやめ、ルノの近くへ戻ろうとする。',
     fbite: (n, d) => 'フラメトが' + n + 'に噛みついた！ ' + d + 'のダメージ。',
     fram: (n, d, r) => 'フラメトが' + n + 'に体当たり！ ' + d + 'のダメージ。（反動 ' + r + '）',
     growl: (n) => 'フラメトが' + n + 'を威嚇した！ 動きが鈍り、攻撃も弱まる。',
@@ -101,7 +101,7 @@
     const fl = cfg.flamAdvance ? S.flamAdv : S.flam;
     return {
       kind, spec: E, map: MAPS[kind], turn: 1, maxTurns: E.maxTurns || null, rng: cfg.rng || Math.random,
-      luno: { x: S.luno[0], y: S.luno[1], hp: cfg.luHP }, flam: { x: fl[0], y: fl[1], hp: cfg.flHP, guard: false, called: false },
+      luno: { x: S.luno[0], y: S.luno[1], hp: clamp(Number.isFinite(Number(cfg.luHP)) ? Number(cfg.luHP) : 1, 0, LUNO_MAX()) }, flam: { x: fl[0], y: fl[1], hp: clamp(Number.isFinite(Number(cfg.flHP)) ? Number(cfg.flHP) : 1, 0, FLAM_MAX()), guard: false, called: false, callTurns: 0 },
       en: { x: S.en[0], y: S.en[1], hp: E.hp, max: E.hp, slow: cfg.enemySlow || 0, weak: 0, tele: null },   // enemySlow：区画3で「様子を見る」を選ぶと、最初の1ターンだけ敵の移動が鈍る（仮）
       A: cfg.A, K: cfg.K, stones: cfg.stones == null ? BT.STONE_COUNT : cfg.stones, crystal: !!cfg.crystal,
       moveLeft: BT.LUNO_MOVE, steps: 0, moveClosed: false, acted: false, guard: false, phase2: false, over: null
@@ -189,7 +189,7 @@
   function doCalm(B) { const w = why.calm(B); if (w) return { ok: false, why: w }; markActed(B); const d = Math.min(B.A, BT.CALM_DOWN); B.A -= d; return { ok: true, ev: [{ t: 'calm' }, { t: 'anx', A: B.A }, { t: 'msg', text: TXT.calm(d) }] }; }
   function doCall(B) {
     const w = why.call(B); if (w) return { ok: false, why: w };
-    markActed(B); const dl = callDelta(B.K), d = Math.min(B.A, -dl); B.A -= d; B.flam.called = true;
+    markActed(B); const dl = callDelta(B.K), d = Math.min(B.A, -dl); B.A -= d; B.flam.called = true; B.flam.callTurns = 2;
     return { ok: true, ev: [{ t: 'call' }, { t: 'anx', A: B.A }, { t: 'msg', text: TXT.call(d) }] };
   }
   function doCrystal(B) {
@@ -208,28 +208,36 @@
   function moveTo(B, who, c, ev) { const u = B[who]; if (c.x === u.x && c.y === u.y) return; const path = pathOf(c.tbl, c.x, c.y); u.x = c.x; u.y = c.y; ev.push({ t: 'move', who, path }); }
   function flamPhase(B, ev) {
     const f = B.flam, e = B.en, M = BT.FL_MOVE; f.guard = false;
-    const ram = B.K >= BT.FL_RAM_K, low = f.hp / FLAM_MAX() <= BT.FL_RETREAT, called = f.called; f.called = false;
+    const ram = B.K >= BT.FL_RAM_K, low = f.hp / FLAM_MAX() <= BT.FL_RETREAT;
+    const called = f.called || (f.callTurns || 0) > 0;
+    f.called = false;
+    f.callTurns = Math.max(0, (f.callTurns || 0) - 1);
     const d = () => manh(f, e);
     const strike = () => {
       if (d() !== 1) return false;
-      if (ram && !called) { const dm = BT.FL_RAM; hurt(B, ev, 'en', dm, 'ram', 'flam'); ev.push({ t: 'msg', text: TXT.fram(enName(B), dm, BT.FL_RAM_RECOIL) }); f.hp = Math.max(1, f.hp - BT.FL_RAM_RECOIL); ev.push({ t: 'recoil', who: 'flam', dmg: BT.FL_RAM_RECOIL, hp: f.hp }); }
+      if (ram && !called) { const dm = BT.FL_RAM; hurt(B, ev, 'en', dm, 'ram', 'flam'); ev.push({ t: 'msg', text: TXT.fram(enName(B), dm, BT.FL_RAM_RECOIL) }); f.hp = Math.max(0, f.hp - BT.FL_RAM_RECOIL); ev.push({ t: 'recoil', who: 'flam', dmg: BT.FL_RAM_RECOIL, hp: f.hp }); }
       else { const dm = BT.FL_BITE; hurt(B, ev, 'en', dm, 'bite', 'flam'); ev.push({ t: 'msg', text: TXT.fbite(enName(B), dm) }); }
       checkEnd(B, ev); if (B.kind === 'boss' && !B.phase2 && B.en.hp > 0 && B.en.hp <= B.spec.phase2At) { B.phase2 = true; ev.push({ t: 'phase2' }); }
       return true;
     };
     const growl = () => { e.slow = BT.GROWL_TURNS; e.weak = BT.GROWL_TURNS; ev.push({ t: 'growl', who: 'flam' }, { t: 'msg', text: TXT.growl(enName(B)) }); };
+    if (called) {                      // 呼びかけ：負傷や敵追跡よりもルノの元へ向かう
+      const c = bestCell(B, 'flam', M, (x, y) =>
+        -5 * (Math.abs(x - B.luno.x) + Math.abs(y - B.luno.y))
+        - (inTele(B, x, y) ? 50 : 0)
+        - (manh({x, y}, e) === 1 ? 3 : 0));
+      if (c) moveTo(B, 'flam', c, ev);
+      f.guard = low || inTele(B, f.x, f.y);
+      if (f.guard) ev.push({ t: 'guard', who: 'flam' });
+      ev.push({ t: 'msg', text: 'フラメトはルノの声に応え、そばへ駆け寄った。' });
+      return;
+    }
     if (low) {                         // 防御・退避：敵から離れ、ルノのそばへ。受けるダメージが減る
       const c = bestCell(B, 'flam', M, (x, y) => Math.abs(x - e.x) + Math.abs(y - e.y) - (inTele(B, x, y) ? 6 : 0) - 0.5 * (Math.abs(x - B.luno.x) + Math.abs(y - B.luno.y)));
       if (c) moveTo(B, 'flam', c, ev); f.guard = true; ev.push({ t: 'guard', who: 'flam' }, { t: 'msg', text: TXT.fguard }); return;
     }
     if (inTele(B, f.x, f.y)) {         // 突進の予兆の線から出る
       const c = bestCell(B, 'flam', M, (x, y) => (inTele(B, x, y) ? -9 : 0) - Math.abs(x - e.x) - Math.abs(y - e.y)); if (c) moveTo(B, 'flam', c, ev);
-    }
-    if (called) {                      // 呼びかけられた：ルノのそばで身構える（威嚇はする）
-      const c = bestCell(B, 'flam', M, (x, y) => -(Math.abs(x - B.luno.x) + Math.abs(y - B.luno.y)) * 2 - (inTele(B, x, y) ? 9 : 0) + (manh({ x, y }, e) <= 3 ? 0.5 : 0));
-      if (c) moveTo(B, 'flam', c, ev);
-      if (d() <= 3 && e.slow <= 0) growl(); else if (!strike()) ev.push({ t: 'msg', text: TXT.fstay });
-      return;
     }
     if (d() === 1) { strike(); return; }
     // 敵のとなりまで行けるなら行って攻撃。行けなければ威嚇か接近

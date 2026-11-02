@@ -214,6 +214,14 @@ main { max-width: 1120px; margin: 0 auto; padding-block: 18px 40px; }
 .play[data-mode="novel"] .msg-body, .play[data-mode="lamp"] .msg-body { grid-template-columns: minmax(0, 1fr); }
 @media (hover: none) and (pointer: coarse) { .keys-p, .keys-b { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .phud > .pt.w3, .nxt { animation: none; } .veil, .banner { animation: none; } .fade-v { transition: none; } * { scroll-behavior: auto !important; } }
+/* 改修版：読みやすい会話スキップ／盤面の見やすさ */
+.skip-btn { position: fixed; z-index: 60; top: calc(max(10px, env(safe-area-inset-top, 0px)) + 56px); right: 14px;
+  padding: 9px 15px; border-radius: 999px; border: 1.5px solid #d6bd90;
+  color: #fff8df; background: rgba(46,35,58,.92); box-shadow: 0 4px 16px rgba(0,0,0,.32);
+  font: 700 12px/1.25 var(--font-b); cursor:pointer; }
+.skip-btn[aria-pressed="true"] { background: #23675d; border-color: #a8e5cd; }
+.play:not([data-mode="novel"]) .skip-btn { display:none; }
+@media(max-width:640px){.skip-btn{top:calc(max(6px,env(safe-area-inset-top,0px)) + 45px);right:8px;padding:7px 11px;font-size:11px}}
 /* ---------- ノベルの場面：台詞の枠・選択肢を、場面の絵の上に半透明で重ねる ---------- */
 .play[data-mode="novel"] { grid-template-columns: minmax(0, 1fr); max-width: 1000px; margin-inline: auto; }
 .play[data-mode="novel"] .side { display: none; }
@@ -420,6 +428,7 @@ body.on-novel main { max-width: none; padding: 0; }
 
     <section class="screen" id="scr-play" hidden>
       <div class="play" id="play" data-mode="novel">
+        <button type="button" class="skip-btn" id="btn-skip" aria-pressed="false" title="会話を早送り（選択肢では停止）">▶▶ 会話スキップ：OFF</button>
         <div class="phud" aria-live="off"><span class="phh pl">ルノ <b id="ph-lh">25</b><span class="pg"><span id="pg-lh"></span></span></span><span class="phh pf">フラメト <b id="ph-fh">35</b><span class="pg"><span id="pg-fh"></span></span></span><span class="pt" id="ph-t" role="img" aria-label="時刻" hidden><span class="pw-sky"></span><span class="pw-hand"><i></i></span><span class="pw-pin"></span></span><button type="button" id="ph-menu" aria-label="メニュー">☰</button></div>
         <div class="left">
           <div class="chips" id="chips" aria-live="polite"></div>

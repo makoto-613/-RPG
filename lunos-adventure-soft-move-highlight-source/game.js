@@ -46,6 +46,37 @@
   let stage = null;    // ノベルの場面を描くもの
   let titleStage = null;   // タイトル画面の背景（廃坑の入口）を描くもの
   let menuOpen = false;
+  const cloneState = (v) => JSON.parse(JSON.stringify(v));
+  let sectionEntry = null;       // 区画に入った時点の状態：途中再開で選択肢を二重反映しない
+  let resumePending = null;      // セーブ済みの謎解き／戦闘の状態
+  let resumeSnapshot = null;     // 途中再開時に盤面直前のHP・フラグを戻す
+  let resumeChoices = [];        // 盤面前の選択を正しく再現するための履歴
+  function saveProgress(kind, payload) {
+    if (!S || S.ended || !sectionEntry) return;
+    store.set(TUNE_G.SAVE_KEY, {
+      v: 2, S: cloneState(S), entry: cloneState(sectionEntry),
+      progress: Object.assign({ kind, sec: S.sec }, cloneState(payload)),
+      rem: T.on ? T.rem : null
+    });
+  }
+  function takeResume(kind, id) {
+    const p = resumePending;
+    if (!p || p.kind !== kind || p.sec !== S.sec || (p.sid || p.battleKind) !== id) return null;
+    // 開始地点から物語を再生してきた後に、実際のセーブ時点の数値を戻す
+    if (resumeSnapshot) {
+      const snap = cloneState(resumeSnapshot);
+      Object.keys(snap).forEach((k) => {
+        if (k === 'flags') Object.assign(S.flags, snap.flags);
+        else S[k] = snap[k];
+      });
+    }
+    resumeSnapshot = null; resumeChoices = []; resumePending = null;
+    UI.setSkip(false); hud();
+    return p;
+  }
+  // 谜解き・戦闘モジュールから呼ぶ、区画内オートセーブ
+  window.__autoSaveProgress = saveProgress;
+  window.__takeGameResume = takeResume;
 
   const hud = () => { if (S) UI.hud({ lh: S.lh, fh: S.fh, lmax: RULES.LUNO_HP, fmax: RULES.FLAM_HP }); };
 
@@ -88,6 +119,14 @@
     UI.guard(run);
     if (Array.isArray(line)) { for (const l of line.slice(0, -1)) await UI.say(run, l); line = line[line.length - 1]; }
     if (line) UI.showLine(line, false);
+    // オートセーブ再開時は直前に選んだ選択肢を再現し、重複を防ぐ
+    if (resumePending && resumeChoices.length) {
+      const id = resumeChoices[0];
+      if (items.some((it) => (typeof it === 'string' ? it : it.id) === id)) {
+        resumeChoices.shift();
+        return id;
+      }
+    }
     return UI.choose(run, items.map((it) => optFor(it, offs && typeof it === 'string' ? offs[it] : undefined)));
   }
 
@@ -160,6 +199,7 @@
   function begin(first) {
     closeAll();
     const run = UI.newRun();
+    if (resumePending) UI.setSkip(true); // 中断した盤面に至るまでの既読部分は早送り
     drive(run, first);
   }
   async function drive(run, first) {
@@ -169,8 +209,10 @@
         UI.guard(run);
         if (next.end) { await playEnding(run, next.end); return; }
         S.sec = next.go; hud();
+        sectionEntry = cloneState(S);
         if (S.sec >= 1) {
-          save();
+          // 再開時は保存済みの盤面データを守り、該当する場面で読み込む
+          if (!resumePending) save();
           const o = next.o || {};
           if (!o.fromTimer && !o.askOnly) UI.banner('区画' + S.sec + '　' + STORY.sec[S.sec].name + '（' + STORY.sec[S.sec].kind + '）', '', TUNE_G.SECTION_BANNER_MS);
         }
@@ -189,11 +231,19 @@
   /* ---------------- 保存・つづきから ---------------- */
   function save() {
     if (!S || S.ended) return;
-    store.set(TUNE_G.SAVE_KEY, { v: 1, S, rem: T.on ? T.rem : null });
+    store.set(TUNE_G.SAVE_KEY, { v: 2, S: cloneState(S), entry: cloneState(sectionEntry || S), progress: null, rem: T.on ? T.rem : null });
   }
   function continueGame() {
     const d = store.get(TUNE_G.SAVE_KEY); if (!d || !d.S) return;
-    closeAll(); S = d.S; S.log = S.log || []; S.diff = S.diff || 'easy';   // 難易度のない古い保存は「かんたん」 S.flags = Object.assign(newFlags(), S.flags);
+    closeAll();
+    resumePending = d.progress && d.progress.sec === d.S.sec ? d.progress : null;
+    resumeSnapshot = resumePending ? cloneState(d.S) : null;
+    const baseLog = d.entry && Array.isArray(d.entry.log) ? d.entry.log.length : 0;
+    resumeChoices = resumePending ? (d.S.log || []).slice(baseLog).filter((id) => !!CHOICES[id]) : [];
+    S = cloneState(resumePending && d.entry ? d.entry : d.S);
+    S.log = S.log || [];
+    S.diff = S.diff || 'easy';
+    S.flags = Object.assign(newFlags(), S.flags);  // 旧セーブデータに足りないフラグを補う
     UI.screen('play'); hud(); window.Sound.ac();
     if (S.mode === 'expo' && d.rem != null) timerStart(d.rem); else { timerStop(); UI.timer(null); }
     begin({ go: S.sec });
@@ -210,7 +260,7 @@
   }
   function newGame(mode, diff) {
     if (!diff) { chooseDiff(mode); return; }
-    closeAll(); timerStop(); S = newState(mode, diff);
+    closeAll(); timerStop(); resumePending = null; resumeSnapshot = null; resumeChoices = []; sectionEntry = null; S = newState(mode, diff);
     UI.screen('play'); UI.timer(null); hud(); window.Sound.ac();
     begin({ go: 0 });
   }
@@ -268,7 +318,7 @@
     }).join('');
     const d = store.get(TUNE_G.SAVE_KEY), has = !!(d && d.S);
     $('btn-cont').hidden = !has;
-    if (has) $('cont-note').textContent = '区画' + d.S.sec + '「' + STORY.sec[d.S.sec].name + '」のはじめから／' + (d.S.mode === 'expo' ? '展示モード・' + UI.dayPhase(d.rem == null ? 0 : d.rem).word + 'ごろ' : '時間制限なし') + '／難易度 ' + diffName(d.S.diff);
+    if (has) $('cont-note').textContent = '区画' + d.S.sec + '「' + STORY.sec[d.S.sec].name + '」' + (d.progress ? 'の途中から／' : 'のはじめから／') + (d.S.mode === 'expo' ? '展示モード・' + UI.dayPhase(d.rem == null ? 0 : d.rem).word + 'ごろ' : '時間制限なし') + '／難易度 ' + diffName(d.S.diff);
   }
 
   /* ---------------- メニュー ---------------- */
@@ -324,8 +374,13 @@
       er.onclick = () => { if (!armed) { armed = true; er.textContent = '本当に消す？ もう一度押す'; return; } endings = {}; store.del(TUNE_G.END_KEY); store.del(TUNE_G.SAVE_KEY); menuOpen = false; UI.closeVeil(); if (!inPlay) renderTitle(); };
       const bh = d.querySelector('#m-bhelp'); if (bh) bh.onclick = () => { menuOpen = false; battleHelp(true); };
       const au = d.querySelector('#m-auto'); if (au) au.onclick = () => { menuOpen = false; Puzzle.autoSolve(); };
-      const rs = d.querySelector('#m-restart'); if (rs) rs.onclick = () => { menuOpen = false; UI.closeVeil(); begin({ go: S.sec }); };
-      const ti = d.querySelector('#m-title'); if (ti) ti.onclick = () => { menuOpen = false; confirmDlg('タイトルへ戻ります。進み具合は、区画のはじめに自動で保存されています。', 'タイトルへ', toTitle); };
+      const rs = d.querySelector('#m-restart'); if (rs) rs.onclick = () => {
+        menuOpen = false; UI.closeVeil(); resumePending = null;
+        // 中途のHPや選択を重複させず、区画開始の状態まで戻す
+        if (sectionEntry) S = cloneState(sectionEntry);
+        begin({ go: S.sec });
+      };
+      const ti = d.querySelector('#m-title'); if (ti) ti.onclick = () => { menuOpen = false; confirmDlg('タイトルへ戻ります。区画開始時と謎解き・戦闘の進行が自動保存されています。', 'タイトルへ', toTitle); };
       d.querySelectorAll('[data-j]').forEach((b) => { b.onclick = () => { menuOpen = false; jumpTo(+b.dataset.j); }; });
       d.querySelectorAll('[data-adj]').forEach((b) => { b.onclick = () => { const [w, v] = b.dataset.adj.split(':'); S[w] = clamp(S[w] + +v, 0, 100); hud(); sfx('gauge'); b.blur(); }; });
       d.querySelectorAll('[data-t]').forEach((b) => { b.onclick = () => { menuOpen = false; UI.closeVeil(); if (!T.on) timerStart(+b.dataset.t); else setRemaining(+b.dataset.t); }; });
@@ -370,6 +425,7 @@
     });
     wrap.addEventListener('pointercancel', () => { p0 = null; });
     $('msg').addEventListener('click', () => { window.Sound.ac(); UI.advance(); });
+    $('btn-skip').addEventListener('click', (e) => { e.stopPropagation(); window.Sound.ac(); UI.setSkip(!UI.getSkip()); });
   }
 
   /* ---------------- 毎フレームの描画 ---------------- */

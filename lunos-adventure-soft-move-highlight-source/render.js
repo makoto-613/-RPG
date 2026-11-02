@@ -118,6 +118,76 @@
       if (v.swim) { ctx.save(); ctx.strokeStyle = 'rgba(190,235,255,.7)'; ctx.lineWidth = Math.max(1, T * 0.03); for (let i = 0; i < 2; i++) { const q = ((now / 700) + i * 0.5) % 1; ctx.globalAlpha = 1 - q; ctx.beginPath(); ctx.ellipse((v.x + 0.5) * T, (v.y + 0.88) * T, T * (0.25 + 0.3 * q), T * (0.08 + 0.1 * q), 0, 0, 7); ctx.stroke(); } ctx.restore(); }
     }
 
+
+    /* ---------- 改修版：盤面の共通視認性レイヤー ----------
+       壁、床、装置、移動できる隣のマスを視覚的に区別する。
+       全てのマーカーはコアルールの step/passable と同じ情報を使う。 */
+    function drawGrid(G, now) {
+      const rows = G.L.rows, s = G.s, sid = G.sid;
+      const candleLight = sid === 's7' ? G.M.litMap(G.L, s) : null;
+      const wall = (x, y) => {
+        if (x < 0 || y < 0 || x >= W || y >= H) return true;
+        const c = rows[y][x];
+        return c === '#' || (sid === 's1' && c === 'X');
+      };
+      ctx.save();
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const c = rows[y][x], px = x * T, py = y * T, solid = wall(x,y);
+        let blocked = solid;
+        if (sid === 's0' && 'Btyo'.includes(c)) blocked = true;
+        if (sid === 's1' && c === 'o') blocked = true;
+        if (sid === 's4' && 'pSTbX'.includes(c)) blocked = true;
+        if (sid === 's2' && CHN[c]) {
+          const r = CHN[c]; blocked = !G.M.passable(c, s.w, s.open);
+        }
+        if (candleLight && !solid && c !== 'E' && !candleLight[x + ',' + y]) blocked = true;
+        if (blocked && !solid) {
+          if (candleLight) {
+            // 灯りの外は「遮られた床」として暗く描く。×の乱立を避ける
+            ctx.fillStyle = 'rgba(7,7,21,.22)';
+            ctx.fillRect(px + 1, py + 1, T - 2, T - 2);
+          } else {
+            ctx.fillStyle = 'rgba(58,21,29,.15)';
+            ctx.fillRect(px + 1, py + 1, T - 2, T - 2);
+            ctx.fillStyle = 'rgba(255,143,121,.72)';
+            ctx.font = '700 ' + Math.max(9, Math.round(T*.21)) + 'px sans-serif';
+            ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+            ctx.fillText('×', px + T * .9, py + T * .05);
+          }
+        }
+        ctx.strokeStyle = solid ? 'rgba(11,8,18,.76)' : 'rgba(221,221,229,.28)';
+        ctx.lineWidth = Math.max(1, T * .022);
+        ctx.strokeRect(px + .5, py + .5, T - 1, T - 1);
+        // 壁の真下に床がある場所は、段差の影と縁を強調する
+        if (solid && !wall(x,y+1)) {
+          ctx.fillStyle = 'rgba(7,6,17,.7)'; ctx.fillRect(px, py + T*.88, T, T*.12);
+          ctx.fillStyle = 'rgba(226,197,145,.62)'; ctx.fillRect(px+T*.07, py+T*.86, T*.86, Math.max(1.4,T*.035));
+        }
+      }
+      // コア判定が許す次の一歩だけ、淡い塗りと控えめな輪郭で示す
+      const moves = [['U',0,-1],['R',1,0],['D',0,1],['L',-1,0]];
+      moves.forEach(([d,dx,dy])=>{
+        const nx=s.px+dx, ny=s.py+dy;
+        if(nx<0||ny<0||nx>=W||ny>=H) return;
+        const result=G.M.step(G.L,s,d);
+        if(!result.changed) return;
+        const walk=!!result.moved, px=nx*T, py=ny*T;
+        ctx.fillStyle = walk ? 'rgba(30,217,210,.06)' : 'rgba(255,204,102,.07)';
+        ctx.fillRect(px+T*.07,py+T*.07,T*.86,T*.86);
+        ctx.strokeStyle = walk ? 'rgba(139,255,243,.34)' : 'rgba(255,228,137,.34)';
+        ctx.lineWidth=Math.max(1.2,T*.028);
+        ctx.strokeRect(px+T*.08,py+T*.08,T*.84,T*.84);
+        ctx.fillStyle=ctx.strokeStyle;
+        ctx.beginPath();
+        ctx.arc(px+T*.5,py+T*.5,Math.max(2.2,T*.055),0,Math.PI*2);ctx.fill();
+      });
+      // 現在位置を示すリングは常に最後に描く
+      const pulse = Math.sin(now/360)*T*.025;
+      ctx.lineWidth = Math.max(2,T*.045);ctx.strokeStyle='rgba(255,246,173,.93)';
+      ctx.beginPath();ctx.ellipse((s.px+.5)*T,(s.py+.89)*T,T*(.29+pulse/T),T*.105,0,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    }
+
     /* ---------- 地面（共通） ---------- */
     function groundAll(G, set, special) {
       const rows = G.L.rows;
@@ -157,6 +227,7 @@
         else if (c === 'y') list.push({ z: y + 1, f: () => spr('o_hay', x, y, { s: 0.95 }) });
         else if (c === 'o') list.push({ z: y + 1, f: () => spr('r_rocks', x, y, { s: 0.78 }) });
       }
+      drawGrid(G, now);
       V.sheep.forEach((e, i) => list.push({ z: e.y + 1, f: () => { shadow(e.x, e.y, 0.3, 0.28); const bob = e.moving ? Math.abs(Math.sin(e.ph * Math.PI * 2)) * 0.04 : 0; spr(i % 2 ? 'sheep_graze' : 'sheep_idle', e.x, e.y, { s: 1.1, oy: -bob, flip: e.dir === 'R' }); } }));
       list.push({ z: V.luno.y + 1.001, f: () => drawChar('luno', V.luno, now) });
       list.push({ z: V.flam.y + 1, f: () => drawChar('flam', V.flam, now) });
@@ -175,6 +246,7 @@
         if ('=TCbG'.indexOf(c) >= 0) { tile('mine_rail_h', x, y); return true; }
         return false;
       });
+      drawGrid(G, now);
       // 足場の印
       p.slots.forEach((q, i) => {
         if (s.filled[i]) return;
@@ -227,6 +299,7 @@
         }
         return true;
       });
+      drawGrid(G, now);
       // 水路の色札
       for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
         const r = CHN[rows[y][x]]; if (!r) continue;
@@ -260,11 +333,33 @@
       });
       if (p.sw) list.push({ z: p.sw[1] + 0.5, f: () => {
         const x = p.sw[0], y = p.sw[1], known = G.flags.swKnown || s.open || (s.px === x && s.py === y);
-        if (!known) return;
         const cx = (x + 0.5) * T, cy = (y + 0.55) * T;
-        if (!s.open) glow(cx, cy, T * 0.9, '120,200,255', 0.3 + 0.12 * Math.sin(now / 280));
-        spr('switch_plate', x, y, { s: 0.78, oy: s.open ? 0.03 : -0.02, dim: s.open ? 0.3 : 0 });
-        if (G.flags.swKnown && !s.open) { ctx.save(); ctx.strokeStyle = 'rgba(160,225,255,.9)'; ctx.lineWidth = Math.max(1.5, T * 0.04); const q = (now / 900) % 1; ctx.globalAlpha = 1 - q; ctx.beginPath(); ctx.arc(cx, cy, T * (0.3 + 0.35 * q), 0, 7); ctx.stroke(); ctx.restore(); }
+        if (!s.open) glow(cx, cy, T * 1.2, '255,213,105', 0.43 + 0.16 * Math.sin(now / 280));
+        spr('switch_plate', x, y, { s: 0.82, oy: s.open ? 0.03 : -0.02, dim: s.open ? 0.3 : 0 });
+        if (!s.open) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255,229,147,.95)';
+          ctx.lineWidth=Math.max(1.5,T*.045);
+          const q=(now/1150)%1;
+          ctx.globalAlpha=1-q;
+          ctx.beginPath();ctx.arc(cx,cy,T*(.29+.46*q),0,Math.PI*2);ctx.stroke();
+          for (let i=0;i<5;i++) {
+            const a=(i/5)*Math.PI*2+now/1050;
+            const dist=T*(.27+.12*Math.sin(now/260+i));
+            const px=cx+Math.cos(a)*dist, py=cy+Math.sin(a)*dist;
+            const rr=T*(.06+.02*Math.sin(now/180+i));
+            ctx.globalAlpha=.5+.5*Math.sin(now/180+i*2);
+            ctx.strokeStyle='#fff6c8';ctx.lineWidth=Math.max(1.5,T*.035);
+            ctx.beginPath();ctx.moveTo(px-rr,py);ctx.lineTo(px+rr,py);ctx.moveTo(px,py-rr);ctx.lineTo(px,py+rr);ctx.stroke();
+          }
+          ctx.globalAlpha=1;
+          ctx.font='700 '+Math.round(T*.21)+'px "Zen Maru Gothic",sans-serif';
+          ctx.textAlign='center';ctx.textBaseline='bottom';
+          ctx.fillStyle='#ffe6a0';ctx.strokeStyle='#201427';ctx.lineWidth=Math.max(2,T*.08);
+          ctx.strokeText('水門スイッチ',cx,(y-.04)*T);ctx.fillText('水門スイッチ',cx,(y-.04)*T);
+          ctx.restore();
+        }
+        if (known && !s.open) { ctx.save(); ctx.strokeStyle = 'rgba(160,225,255,.9)'; ctx.lineWidth = Math.max(1.5, T * 0.04); const q = (now / 900) % 1; ctx.globalAlpha = 1 - q; ctx.beginPath(); ctx.arc(cx, cy, T * (0.3 + 0.35 * q), 0, 7); ctx.stroke(); ctx.restore(); }
       } });
       // 水門
       list.push({ z: p.gate[1] + 1, f: () => {
@@ -296,6 +391,7 @@
     function drawS4(G, now) {
       const L = G.L, s = G.s, rows = L.rows, p = G.M.prep(L), V = G.vis;
       groundAll(G, 'crys', (c, x, y) => { if (c === 'E') { tile(wallT('crys', x, y), x, y); return true; } return false; });
+      drawGrid(G, now);
       const tr = G.M.trace(L, s.ms);
       const hit = (x, y) => tr.lit.has(x + ',' + y);
       const list = [];
@@ -358,6 +454,7 @@
         if (on) { if (!wall && !p.pos[c]) { ctx.fillStyle = 'rgba(255,190,110,.07)'; ctx.fillRect(x * T, y * T, T, T); } }
         else { ctx.fillStyle = 'rgba(6,5,18,' + (wall || p.pos[c] ? RT.DARK7_WALL : RT.DARK7) + ')'; ctx.fillRect(x * T, y * T, T, T); }   // 壁も暗く（明かりの届く所だけ見える）
       }
+      drawGrid(G, now);
       // 隣の燭台：火を入れると消える二つを、線と ×印で前もって見せる
       const adj = p.ids.find((id) => { const q = p.pos[id]; return !s.on[id] && Math.abs(q[0] - s.px) + Math.abs(q[1] - s.py) === 1; });
       if (adj) {
@@ -414,7 +511,7 @@
 
     function frame(G, now) {
       resize();
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#191525'; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       ctx.save();
       if (G.shake && now < G.shake.until) {

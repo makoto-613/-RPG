@@ -74,7 +74,7 @@
       if (!active || !V) return false;
       const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
       resize(); stepEnt(V.luno, dt); stepEnt(V.flam, dt); stepEnt(V.en, dt);
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle='#171523';ctx.fillRect(0, 0, W, H); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       // 周囲の壁
       for (let y = 0; y * T < H + T; y++) for (let x = -1; x * T < W + T; x++) tile(SET.w + SET.wi[hsh(x + 7, y + 3) % SET.wi.length], ox % T + x * T - (ox % T ? 0 : 0), oy % T + y * T - T, T);
       ctx.fillStyle = 'rgba(8,5,16,.55)'; ctx.fillRect(0, 0, W, H);
@@ -82,11 +82,28 @@
       for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) tile(SET.f + SET.fi[hsh(x, y) % SET.fi.length], ox + x * T, oy + y * T, T);
       ctx.strokeStyle = 'rgba(20,10,24,.9)'; ctx.lineWidth = Math.max(3, T * 0.06); ctx.strokeRect(ox, oy, 7 * T, 7 * T);
       if (B.kind === 'boss') { ctx.fillStyle = 'rgba(10,6,30,.22)'; ctx.fillRect(ox, oy, 7 * T, 7 * T); }
-      // 移動できるマス（ルノの番）
+      // 移動できるマス（ルノの番）：床の模様を隠さないよう淡く表示する
       if (!lock && !B.over && !why.move(B)) {
         const tbl = bfs(B, B.luno.x, B.luno.y, B.moveLeft); const pulse = 0.5 + 0.5 * Math.sin(now / 260);
-        Object.keys(tbl).forEach((k) => { const c = tbl[k]; if (!c.d) return; const [x, y] = k.split(',').map(Number); ctx.fillStyle = 'rgba(63,200,196,' + (0.22 + 0.1 * pulse) + ')'; ctx.fillRect(ox + x * T + 2, oy + y * T + 2, T - 4, T - 4); ctx.strokeStyle = 'rgba(160,255,245,.8)'; ctx.lineWidth = Math.max(1.5, T * 0.03); ctx.strokeRect(ox + x * T + 3, oy + y * T + 3, T - 6, T - 6); });
+        Object.keys(tbl).forEach((k) => { const c = tbl[k]; if (!c.d) return; const [x, y] = k.split(',').map(Number); ctx.fillStyle = 'rgba(63,200,196,' + (0.045 + 0.035 * pulse) + ')'; ctx.fillRect(ox + x * T + 2, oy + y * T + 2, T - 4, T - 4); ctx.strokeStyle = 'rgba(160,255,245,.26)'; ctx.lineWidth = Math.max(1, T * 0.02); ctx.strokeRect(ox + x * T + 3, oy + y * T + 3, T - 6, T - 6); });
       }
+      // 一マス単位の外枠：背景模様ではなく移動領域だと分かるようにする
+      ctx.save();
+      for (let y=0;y<7;y++) for (let x=0;x<7;x++) {
+        const px=ox+x*T, py=oy+y*T, wall=B.map[y][x]==='#';
+        if(wall) {
+          ctx.fillStyle='rgba(23,14,25,.68)';
+          ctx.fillRect(px+1,py+1,T-2,T-2);
+          ctx.fillStyle='rgba(255,163,125,.7)';
+          ctx.font='700 '+Math.max(10,Math.round(T*.22))+'px sans-serif';
+          ctx.textAlign='right';ctx.textBaseline='top';
+          ctx.fillText('×',px+T*.9,py+T*.04);
+        }
+        ctx.strokeStyle=wall?'rgba(10,8,14,.94)':'rgba(236,243,246,.47)';
+        ctx.lineWidth=Math.max(1.4,T*.028);
+        ctx.strokeRect(px+.5,py+.5,T-1,T-1);
+      }
+      ctx.restore();
       // 突進の予兆
       if (V.tele.length) { const p = 0.5 + 0.5 * Math.sin(now / 120); V.tele.forEach((c) => { ctx.fillStyle = 'rgba(230,50,60,' + (0.3 + 0.25 * p) + ')'; ctx.fillRect(ox + c[0] * T, oy + c[1] * T, T, T); ctx.strokeStyle = 'rgba(255,120,120,.95)'; ctx.lineWidth = Math.max(2, T * 0.04); ctx.strokeRect(ox + c[0] * T + 2, oy + c[1] * T + 2, T - 4, T - 4); ctx.fillStyle = 'rgba(255,230,230,.9)'; ctx.font = '700 ' + Math.round(T * 0.4) + 'px "Zen Maru Gothic",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('!', cx(c[0]), cy(c[1])); }); }
       // 石（壁）と、奥行き順の登場人物
@@ -115,7 +132,7 @@
       { id: 'stone', label: '石弾', sub: () => 'あと' + B.stones + '・射程' + BT.STONE_MIN + '〜' + BT.STONE_MAX + '・' + BT.STONE_DMG },
       { id: 'guard', label: '防御', sub: () => '敵の攻撃を軽くする' },
       { id: 'calm', label: '落ち着く', sub: () => '心を静める' },
-      { id: 'call', label: '呼びかけ', sub: () => (callDelta(B.K) == null ? '今は、声が届かない' : '声をかける') },
+      { id: 'call', label: '呼びかける', sub: () => (callDelta(B.K) == null ? '今は、声が届かない' : 'フラメトをルノの近くへ2ターン誘導') },
       { id: 'crystal', label: '◆ 水晶を使う', sub: () => '敵を退かせる（3ターン目から）' }
     ];
     function buildCmd() {
@@ -179,6 +196,10 @@
     function dirTo(a, b) { const dx = b.x - a.x, dy = b.y - a.y; return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U'); }
     // 画面の表示を、ルールの状態にそろえる
     function syncView() { V.hp.luno = B.luno.hp; V.hp.flam = B.flam.hp; V.hp.en = B.en.hp; V.A = B.A; hudPush(); }
+    function saveBattle() {
+      if (B && !B.over && window.__autoSaveProgress)
+        window.__autoSaveProgress('battle', { battleKind: B.kind, battleState: B });
+    }
 
     /* ---------- 入力 ---------- */
     async function runAction(fn) {
@@ -186,7 +207,7 @@
       const r = fn(); if (!r.ok) { sfx('warn'); if (r.why) UI.sys(r.why + '。'); return; }
       lock = true; refreshCmd();
       try {
-        await play(r.ev); UI.guard(run);
+        await play(r.ev); UI.guard(run); syncView(); saveBattle();
         if (B.over) { syncView(); finishTurn(); return; }
         lock = false; refreshCmd();
         if (B.acted && B.steps > 0) { await UI.wait(run, VT.END_DELAY); if (!lock && !B.over) await command('end'); }   // 移動も行動も済んだら、自動でターンを終える
@@ -197,7 +218,7 @@
       const wasStep = false; void wasStep;
       if (id === 'end') {
         lock = true; refreshCmd();
-        try { const r = Rules.endTurn(B); await play(r.ev); UI.guard(run); syncView(); if (B.over) { finishTurn(); return; } lock = false; UI.sys(TXT.yourTurn(B.turn, B.maxTurns)); refreshCmd(); }
+        try { const r = Rules.endTurn(B); await play(r.ev); UI.guard(run); syncView(); saveBattle(); if (B.over) { finishTurn(); return; } lock = false; UI.sys(TXT.yourTurn(B.turn, B.maxTurns)); refreshCmd(); }
         catch (e) { if (e !== CANCEL) console.error(e); }
         return;
       }
@@ -241,7 +262,13 @@
       run = runTok; cfg = c; hooks = c; active = true;
       for (;;) {
         B = newBattle(Object.assign({}, c, { rng: c.rng || (window.__rng || Math.random) }));
-        setupView(); lock = false; buildCmd(); hudPush();
+        const saved = window.__takeGameResume && window.__takeGameResume('battle', c.kind);
+        if (saved && saved.battleState && !saved.battleState.over && saved.battleState.kind === c.kind) {
+          B = Object.assign(B, saved.battleState);
+          B.rng = c.rng || window.__rng || Math.random;
+          UI.banner('戦闘の途中から再開しました', 'good', 2500);
+        }
+        setupView(); lock = false; buildCmd(); hudPush(); saveBattle();
         UI.sys(TXT.start[c.kind]); refreshCmd();
         await UI.wait(run, 700); UI.sys(TXT.yourTurn(B.turn, B.maxTurns));
         await new Promise((res) => { nextTurn = res; run.pend.push(res); });
