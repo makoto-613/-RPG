@@ -141,7 +141,7 @@
       UI.guard(run);
       if (typeof b === 'string') { UI.sys(b); continue; }
       if (b.sc && !S.ended && SC_BGM[b.sc] && (b.sc === 'memory' || b.sc === 'return_path' || S.sec === 0)) bgm(SC_BGM[b.sc]);
-      const fxNow = () => { if (b.sfx) sfx(b.sfx); };   // 効果音は、絵が変わる瞬間に鳴らす（暗転をはさむときは、明るくなり始めたとき）
+      const fxNow = () => { if (b.sfx) sfx(b.sfx, b.sfxVariant); };   // 効果音は、絵が変わる瞬間に鳴らす（暗転をはさむときは、明るくなり始めたとき）
       if (b.sc || b.c || b.item || b.enemy !== undefined || b.dust !== undefined || b.gate || b.deskOff) { if (b.sc && b.fade && window.Sound.cutSe) window.Sound.cutSe(0.3); await stage.change(b, fxNow); UI.guard(run); } else fxNow();
       if (b.shake) stage.shake(b.shake[0], b.shake[1]);
       if (b.flash) stage.flash();
@@ -345,7 +345,7 @@
       + '<div class="vol"><label for="vol-bgm">BGMの音量</label><input type="range" id="vol-bgm" min="0" max="100" step="5" value="' + prefs.bgmVol + '"><output id="vo-bgm">' + prefs.bgmVol + '</output></div>'
       + '<div class="tgl"><span>効果音</span><button class="sw" id="sw-snd" role="switch" aria-checked="' + !!prefs.sound + '" aria-label="効果音"></button></div>'
       + '<div class="vol"><label for="vol-se">効果音の音量</label><input type="range" id="vol-se" min="0" max="100" step="5" value="' + prefs.seVol + '"><output id="vo-se">' + prefs.seVol + '</output></div>'
-      + '<div class="tgl"><span>補足の表示（原稿／仮の印）</span><button class="sw" id="sw-note" role="switch" aria-checked="' + !!prefs.notes + '" aria-label="補足の表示"></button></div>';
+      ;
     if (inPlay) {
       h += '<div class="btns">' + (mode === 'puzzle' ? '<button class="kbtn sm" id="m-auto">答えを自動で見る</button>' : '') + (mode === 'battle' ? '<button class="kbtn sm" id="m-bhelp">戦い方</button>' : '') + '<button class="kbtn sm" id="m-restart">この区画を最初から</button><button class="kbtn sm rd" id="m-title">タイトルへ</button></div>';
     }
@@ -355,8 +355,7 @@
         + '<div class="fine">カルマ・不安を動かす</div><div class="jump"><button data-adj="K:-10">カルマ −10</button><button data-adj="K:10">カルマ ＋10</button><button data-adj="A:-10">不安 −10</button><button data-adj="A:10">不安 ＋10</button></div>'
         + (S.mode === 'expo' ? '<div class="fine">残り時間を変える（5分・2分・30秒・0秒の出来事を試せます）</div><div class="jump"><button data-t="305">残り5:05</button><button data-t="125">残り2:05</button><button data-t="35">残り0:35</button><button data-t="5">残り0:05</button></div>' : '');
     }
-    h += '<div class="notes-only"><h3 class="sub">印の見かた</h3><div class="fine"><span class="pill">原稿</span> ストーリーフローにある文をそのまま使っています。　<span class="pill prov">仮</span> 原稿にない部分を、試作のために仮に書いた文・数値です（差し替え前提）。</div></div>'   // 補足の表示を消しているときは、印の説明も出さない
-      + '<h3 class="sub">素材</h3>'
+    h += '<h3 class="sub">素材</h3>'
       + '<p class="cr">ドット絵：ご提供の素材をもとに作成。UI：ご提供のUIキット（Kopanda bth08 系）の部品。素材の利用規約は配布元の最新版をご確認ください：<a href="https://kopacurve.blog.fc2.com/blog-entry-394.html" target="_blank" rel="noopener">kopacurve.blog.fc2.com/blog-entry-394.html</a></p>'
       + '<div class="btns"><button class="kbtn" id="m-close">閉じる</button><button class="kbtn sm rd" id="m-erase">進行状況を消す</button></div></div>';
     menuOpen = true;
@@ -368,7 +367,6 @@
       vb.oninput = () => { prefs.bgmVol = +vb.value; d.querySelector('#vo-bgm').textContent = vb.value; window.Sound.setBgmVol(prefs.bgmVol / 100); };
       vs.oninput = () => { prefs.seVol = +vs.value; d.querySelector('#vo-se').textContent = vs.value; window.Sound.S.seVol = prefs.seVol / 100; };
       vb.onchange = savePrefs; vs.onchange = () => { savePrefs(); sfx('click'); };   // 手を離したとき：保存して、効果音は試しに1回鳴らす
-      tg('sw-note', 'notes', () => document.body.classList.toggle('notes-off', !prefs.notes));
       d.querySelector('#m-close').onclick = () => { menuOpen = false; UI.closeVeil(); };
       let armed = false; const er = d.querySelector('#m-erase');
       er.onclick = () => { if (!armed) { armed = true; er.textContent = '本当に消す？ もう一度押す'; return; } endings = {}; store.del(TUNE_G.END_KEY); store.del(TUNE_G.SAVE_KEY); menuOpen = false; UI.closeVeil(); if (!inPlay) renderTitle(); };

@@ -48,7 +48,8 @@
     $('np').hidden = !nm; $('np').textContent = nm;
     mt.className = 'mtext ' + (l.w || '');
     if (f && window.Render.img()) { $('face').hidden = false; window.Render.portrait($('face'), f); $('mbody').classList.remove('noface'); } else { $('face').hidden = true; $('mbody').classList.add('noface'); }
-    $('mmeta').innerHTML = l.w === 'sys' ? '' : (l.p ? '<span class="pill prov">仮</span>' : '<span class="pill">原稿</span>' + (l.src ? '<span>' + l.src + '</span>' : ''));
+    // 出典番号（S04など）や原稿／仮の制作ラベルはプレイ画面に一切表示しない。
+    $('mmeta').textContent = '';
     MS.full = l.t; MS.i = 0; $('nxt').hidden = true;
     $('mbody').scrollTop = 0;
     if (!wait || REDUCED || !TUNE_UI.TYPE_MS || l.w === 'sys') { mt.textContent = l.t; MS.done = true; if (wait) $('nxt').hidden = false; return; }

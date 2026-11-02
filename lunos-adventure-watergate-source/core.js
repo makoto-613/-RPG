@@ -164,7 +164,7 @@
   /* ======================================================================
      区画2 ― 三叉路と水門（三つの水路の水位を、堰のレバーで切り替える）
      水路は ①②③ の三本。レバーを踏むたびに、そのレバーが受け持つ水路の水位が 高⇔低 と入れ替わる。
-       # 壁  . 床  P 開始  Q 水たまりの入口（選択肢が出る）  G 水門  K 水門のスイッチ
+       # 壁  . 床  P 開始  Q 水たまり（背景演出）  G 水門  K 地面に隠されたスイッチ
        1 2 3 … 水路の「道」。その水路の水位が【低い】ときだけ歩ける（高いと水の底）
        a b c … 水路の「浮き橋」。その水路の水位が【高い】ときだけ歩ける（低いと浮かない）
        x y z … 堰のレバー（level.levers で、どの水路を切り替えるかを決める）
@@ -172,7 +172,7 @@
   const CH = { '1': [0, 0], '2': [1, 0], '3': [2, 0], a: [0, 1], b: [1, 1], c: [2, 1] };   // [水路の番号, 歩ける水位]
   const S2 = {
     prep(L) { if (!L.p) L.p = { start: findOne(L.rows, 'P'), gate: findOne(L.rows, 'G'), sw: findOne(L.rows, 'K'), q: findOne(L.rows, 'Q') }; return L.p; },
-    init(L) { const p = S2.prep(L); return { px: p.start[0], py: p.start[1], w: (L.w0 || [1, 1, 1]).slice(), open: false, trig: false }; },
+    init(L) { const p = S2.prep(L); return { px: p.start[0], py: p.start[1], w: (L.w0 || [1, 1, 1]).slice(), open: false }; },
     passable(c, w, open) {
       if (c === '#') return false;
       if (c === 'G') return open;
@@ -195,7 +195,6 @@
         L.levers[c].forEach((k) => { n.w[k - 1] = 1 - n.w[k - 1]; });
         ev.push({ t: 'lever', id: c, chs: L.levers[c].slice(), w: n.w.slice() });
       } else if (c === 'K' && !s.open) { n.open = true; ev.push({ t: 'switch' }); }
-      else if (c === 'Q' && !s.trig) { n.trig = true; ev.push({ t: 'trigger' }); }
       if (c === 'G') ev.push({ t: 'win' });
       return out(n, ev, true, true);
     },

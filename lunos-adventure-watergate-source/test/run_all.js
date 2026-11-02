@@ -4,10 +4,11 @@ const { spawnSync } = require('child_process'); const path = require('path');
 const TESTS = [
   ['rules_node.js', '戦闘のルール（画面なし）'],
   ['levels_check.js', '謎解きの盤面が、どの難易度でも解ける（画面なし）'],
+  ['watergate_check.js', '水門：入室選択肢・隠しスイッチ・不要な表示の除去'],
   ['diff_ui.js', '難易度を選べる・途中で変わらない・つづきからでも同じ'],
   ['e2e.js', '最初から最後まで遊ぶ（結末①〜④、ふつう・むずかしいでも）'],
   ['timer.js', '展示モードのタイマー（残り5分・2分・30秒・時間切れ）'],
-  ['pz_choice.js', '謎解きの中の選択肢（パソコン・スマホ）'],
+  ['pz_choice.js', '水門の入室時の選択肢（パソコン・スマホ）'],
   ['audio_real.js', 'BGM が鳴り、場面で切り替わる'],
   ['se_real.js', '効果音がすべて読み込める'],
   ['se_cut.js', '長い効果音が、台詞を送ると止まる']

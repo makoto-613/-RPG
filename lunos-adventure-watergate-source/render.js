@@ -155,9 +155,16 @@
             ctx.fillText('×', px + T * .9, py + T * .05);
           }
         }
-        ctx.strokeStyle = solid ? 'rgba(11,8,18,.76)' : 'rgba(221,221,229,.28)';
-        ctx.lineWidth = Math.max(1, T * .022);
-        ctx.strokeRect(px + .5, py + .5, T - 1, T - 1);
+        // 境界線は一辺につき一回だけ描き、白い格子の二重線を防ぐ。
+        // 石床の色に近い中間色を細く重ね、模様は隠さない。
+        ctx.strokeStyle = solid ? 'rgba(25,20,30,.42)' : 'rgba(165,158,145,.23)';
+        ctx.lineWidth = Math.max(.7, Math.min(1.1, T * .016));
+        ctx.beginPath();
+        ctx.moveTo(px + T - .5, py); ctx.lineTo(px + T - .5, py + T);
+        ctx.moveTo(px, py + T - .5); ctx.lineTo(px + T, py + T - .5);
+        if (x === 0) { ctx.moveTo(px + .5, py); ctx.lineTo(px + .5, py + T); }
+        if (y === 0) { ctx.moveTo(px, py + .5); ctx.lineTo(px + T, py + .5); }
+        ctx.stroke();
         // 壁の真下に床がある場所は、段差の影と縁を強調する
         if (solid && !wall(x,y+1)) {
           ctx.fillStyle = 'rgba(7,6,17,.7)'; ctx.fillRect(px, py + T*.88, T, T*.12);
@@ -172,9 +179,9 @@
         const result=G.M.step(G.L,s,d);
         if(!result.changed) return;
         const walk=!!result.moved, px=nx*T, py=ny*T;
-        ctx.fillStyle = walk ? 'rgba(30,217,210,.06)' : 'rgba(255,204,102,.07)';
+        ctx.fillStyle = walk ? 'rgba(30,217,210,.12)' : 'rgba(255,204,102,.13)';
         ctx.fillRect(px+T*.07,py+T*.07,T*.86,T*.86);
-        ctx.strokeStyle = walk ? 'rgba(139,255,243,.34)' : 'rgba(255,228,137,.34)';
+        ctx.strokeStyle = walk ? 'rgba(139,255,243,.29)' : 'rgba(255,228,137,.29)';
         ctx.lineWidth=Math.max(1.2,T*.028);
         ctx.strokeRect(px+T*.08,py+T*.08,T*.84,T*.84);
         ctx.fillStyle=ctx.strokeStyle;
@@ -317,7 +324,7 @@
         ctx.fillStyle = 'rgba(255,230,170,.35)'; ctx.fillRect(px + T * 0.09, py + T * 0.29, T * 0.82, T * 0.06);
         ctx.restore();
       }
-      // 水たまり（選択肢の場所）
+      // 水たまりは背景演出。選択肢は入室時に済んでいる。
       if (p.q) spr('puddle', p.q[0], p.q[1], { s: 0.95 });
       // レバーと水門のスイッチ
       const list = [];
@@ -331,35 +338,36 @@
           } });
         }
       });
+      // 隠しスイッチ：踏むまでスイッチ板も名前も見せず、床に散る微かな光だけが手掛かり。
       if (p.sw) list.push({ z: p.sw[1] + 0.5, f: () => {
-        const x = p.sw[0], y = p.sw[1], known = G.flags.swKnown || s.open || (s.px === x && s.py === y);
-        const cx = (x + 0.5) * T, cy = (y + 0.55) * T;
-        if (!s.open) glow(cx, cy, T * 1.2, '255,213,105', 0.43 + 0.16 * Math.sin(now / 280));
-        spr('switch_plate', x, y, { s: 0.82, oy: s.open ? 0.03 : -0.02, dim: s.open ? 0.3 : 0 });
-        if (!s.open) {
-          ctx.save();
-          ctx.strokeStyle = 'rgba(255,229,147,.95)';
-          ctx.lineWidth=Math.max(1.5,T*.045);
-          const q=(now/1150)%1;
-          ctx.globalAlpha=1-q;
-          ctx.beginPath();ctx.arc(cx,cy,T*(.29+.46*q),0,Math.PI*2);ctx.stroke();
-          for (let i=0;i<5;i++) {
-            const a=(i/5)*Math.PI*2+now/1050;
-            const dist=T*(.27+.12*Math.sin(now/260+i));
-            const px=cx+Math.cos(a)*dist, py=cy+Math.sin(a)*dist;
-            const rr=T*(.06+.02*Math.sin(now/180+i));
-            ctx.globalAlpha=.5+.5*Math.sin(now/180+i*2);
-            ctx.strokeStyle='#fff6c8';ctx.lineWidth=Math.max(1.5,T*.035);
-            ctx.beginPath();ctx.moveTo(px-rr,py);ctx.lineTo(px+rr,py);ctx.moveTo(px,py-rr);ctx.lineTo(px,py+rr);ctx.stroke();
-          }
-          ctx.globalAlpha=1;
-          ctx.font='700 '+Math.round(T*.21)+'px "Zen Maru Gothic",sans-serif';
-          ctx.textAlign='center';ctx.textBaseline='bottom';
-          ctx.fillStyle='#ffe6a0';ctx.strokeStyle='#201427';ctx.lineWidth=Math.max(2,T*.08);
-          ctx.strokeText('水門スイッチ',cx,(y-.04)*T);ctx.fillText('水門スイッチ',cx,(y-.04)*T);
-          ctx.restore();
+        const x = p.sw[0], y = p.sw[1], cx = (x + 0.5) * T, cy = (y + 0.55) * T;
+        if (s.open) {
+          // 作動した後だけ、床の下からスイッチの実体が現れる。
+          spr('switch_plate', x, y, { s: 0.82, oy: 0.03, dim: 0.30 });
+          return;
         }
-        if (known && !s.open) { ctx.save(); ctx.strokeStyle = 'rgba(160,225,255,.9)'; ctx.lineWidth = Math.max(1.5, T * 0.04); const q = (now / 900) % 1; ctx.globalAlpha = 1 - q; ctx.beginPath(); ctx.arc(cx, cy, T * (0.3 + 0.35 * q), 0, 7); ctx.stroke(); ctx.restore(); }
+        const discovered = !!G.flags.swKnown; // 泳いで調べた場合は少しだけ気づきやすい。
+        const pulse = Math.sin(now / 750 + x + y);
+        glow(cx, cy, T * 0.65, '255,233,173', (discovered ? 0.16 : 0.11) + 0.025 * pulse);
+        ctx.save();
+        // 床の一点にときどき星のような反射。ヒントではあるが仕掛けの輪郭は描かない。
+        const glints = [[-0.20, 0.07], [0.18, -0.15], [0.08, 0.21]];
+        for (let i = 0; i < glints.length; i++) {
+          const phase = now / 520 + i * 2.65 + x;
+          const twinkle = Math.pow(Math.max(0, Math.sin(phase)), 3);
+          const a = (discovered ? 0.60 : 0.40) * twinkle;
+          if (a < 0.04) continue;
+          const [gx, gy] = glints[i], px = cx + gx * T, py = cy + gy * T;
+          const len = T * (0.035 + 0.035 * twinkle);
+          ctx.globalAlpha = a;
+          ctx.strokeStyle = '#fff1b7';
+          ctx.lineWidth = Math.max(1, T * 0.014);
+          ctx.beginPath();
+          ctx.moveTo(px - len, py); ctx.lineTo(px + len, py);
+          ctx.moveTo(px, py - len); ctx.lineTo(px, py + len);
+          ctx.stroke();
+        }
+        ctx.restore();
       } });
       // 水門
       list.push({ z: p.gate[1] + 1, f: () => {

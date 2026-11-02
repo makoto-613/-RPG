@@ -173,7 +173,6 @@
       } else if (sid === 's2') {
         if (e.t === 'lever') { sfx('lever'); sys(S.fx.lever); fxRing(s.px, s.py, '#8fdcff'); fxSpark(s.px, s.py, 8, '#bfe9ff'); }
         else if (e.t === 'switch') { sfx('open'); sys(S.fx.switch); P.flags.swKnown = true; fxRing(s.px, s.py, '#ffe08a'); shakeScreen(500, 0.012); }
-        else if (e.t === 'trigger') { if (!P.flags.c03 && H.trigger) tasks.push(H.trigger); }
         else if (e.t === 'win') { if (H.win) tasks.push(H.win); }
       } else if (sid === 's4') {
         if (e.t === 'rot') { sfx('rot'); }
@@ -266,12 +265,12 @@
   /* ---------------- 謎解きを始める／終える ---------------- */
   /* run：進行の札。sid：'s1'|'s2'|'s4'|'s7'（区画の番号）。hooks：物語の側の反応 { ready, trigger, open, bonus, win }（それぞれ async (run, api)）
      戻り値：謎解きが終わる（hooks の中で api.finish() が呼ばれる）と解決する Promise */
-  function start(run, sid, hooks, diff) {   // diff：難易度（easy／normal／hard）。盤面と目標・ヒントの文が変わる
+  function start(run, sid, hooks, diff, initialFlags) {   // diff：難易度（easy／normal／hard）。盤面と目標・ヒントの文が変わる
     stopAuto();
     P.diff = LEVELS[diff] ? diff : 'easy';
     P.run = run; P.sid = sid; P.L = (sid === 's0' ? LEVELS.easy : LEVELS[P.diff])[sid]; P.M = MODS[sid]; P.hooks = hooks || {};   // 序章の羊追いは、難易度に関わらず同じ盤面
     P.s = P.M.init(P.L); P.base = core.cl(P.s); P.hist = []; P.moves = 0; P.fx = []; P.shake = null; P.fade = null; P.done = false;
-    P.flags = { c03: null, swKnown: false, hintN: 0, lastLit: null };
+    P.flags = Object.assign({ c03: null, swKnown: false, hintN: 0, lastLit: null }, initialFlags || {});
     const saved = window.__takeGameResume && window.__takeGameResume('puzzle', sid);
     if (saved && saved.puzzleS && Number.isInteger(saved.puzzleS.px) && Number.isInteger(saved.puzzleS.py)) {
       P.s = core.cl(saved.puzzleS);
@@ -285,6 +284,7 @@
     updateChips(); $('choices').innerHTML = '';
     P.busy = false; P.active = true;
     savePuzzle(); idle();
+    if (!saved && P.hooks.enter) runTasks([P.hooks.enter]);
     return new Promise((res) => { P.res = res; run.pend.push(res); }).then(() => UI.guard(run));
   }
   function finish() { P.active = false; P.busy = false; const r = P.res; P.res = null; if (r) r(); }

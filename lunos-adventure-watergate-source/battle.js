@@ -85,7 +85,7 @@
       // 移動できるマス（ルノの番）：床の模様を隠さないよう淡く表示する
       if (!lock && !B.over && !why.move(B)) {
         const tbl = bfs(B, B.luno.x, B.luno.y, B.moveLeft); const pulse = 0.5 + 0.5 * Math.sin(now / 260);
-        Object.keys(tbl).forEach((k) => { const c = tbl[k]; if (!c.d) return; const [x, y] = k.split(',').map(Number); ctx.fillStyle = 'rgba(63,200,196,' + (0.045 + 0.035 * pulse) + ')'; ctx.fillRect(ox + x * T + 2, oy + y * T + 2, T - 4, T - 4); ctx.strokeStyle = 'rgba(160,255,245,.26)'; ctx.lineWidth = Math.max(1, T * 0.02); ctx.strokeRect(ox + x * T + 3, oy + y * T + 3, T - 6, T - 6); });
+        Object.keys(tbl).forEach((k) => { const c = tbl[k]; if (!c.d) return; const [x, y] = k.split(',').map(Number); ctx.fillStyle = 'rgba(63,200,196,' + (0.09 + 0.035 * pulse) + ')'; ctx.fillRect(ox + x * T + 2, oy + y * T + 2, T - 4, T - 4); ctx.strokeStyle = 'rgba(160,255,245,.24)'; ctx.lineWidth = Math.max(1, T * 0.02); ctx.strokeRect(ox + x * T + 3, oy + y * T + 3, T - 6, T - 6); });
       }
       // 一マス単位の外枠：背景模様ではなく移動領域だと分かるようにする
       ctx.save();
@@ -99,9 +99,15 @@
           ctx.textAlign='right';ctx.textBaseline='top';
           ctx.fillText('×',px+T*.9,py+T*.04);
         }
-        ctx.strokeStyle=wall?'rgba(10,8,14,.94)':'rgba(236,243,246,.47)';
-        ctx.lineWidth=Math.max(1.4,T*.028);
-        ctx.strokeRect(px+.5,py+.5,T-1,T-1);
+        // 通行マスの境界は明るい白線ではなく石床になじむ一重の細線。
+        ctx.strokeStyle=wall?'rgba(18,14,24,.56)':'rgba(166,160,148,.24)';
+        ctx.lineWidth=Math.max(.75,Math.min(1.1,T*.016));
+        ctx.beginPath();
+        ctx.moveTo(px+T-.5,py);ctx.lineTo(px+T-.5,py+T);
+        ctx.moveTo(px,py+T-.5);ctx.lineTo(px+T,py+T-.5);
+        if(x===0){ctx.moveTo(px+.5,py);ctx.lineTo(px+.5,py+T);}
+        if(y===0){ctx.moveTo(px,py+.5);ctx.lineTo(px+T,py+.5);}
+        ctx.stroke();
       }
       ctx.restore();
       // 突進の予兆

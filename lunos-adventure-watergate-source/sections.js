@@ -67,40 +67,44 @@
       return { go: 2 };
     }
 
-    /* 区画2 三叉路・水路（謎解き） */
+    /* 区画2 三叉路・水路（謎解き）
+       部屋に入ったとき、盤面を開始する前に選択を提示する。
+       以降は水たまりを踏んでも再度選択肢を出さない。 */
     async function sec2(run) {
       setMode('novel');
       await play(run, P.s2_intro);
+      const id = await ask(run, P.s2_ask, ['swim', 'walk']);
+      apply(id);
+      if (id === 'swim') await play(run, P.s2_res.swim[0]);
+      else await play(run, P.s2_res.walk);
       setMode('puzzle');
       await puzzle(run, 's2', {
-        // 水たまりの入口：フラメトを泳がせる（カルマ＋10・不安＋10）か、二人で歩ける道を探す
-        trigger: async (run2, api) => {
+        // 先に選択を済ませ、盤面に切り替わってから従来の泳ぐアニメーションを再生。
+        // 中途セーブからの再開時には二重再生しない。
+        enter: id === 'swim' ? async (run2, api) => {
           const PZ = api.P, V = PZ.vis, p = PZ.M.prep(PZ.L), R = P.s2_res;
-          PZ.flags.c03 = 'asking';
-          const id = await ask(run2, P.s2_ask, ['swim', 'walk']);
-          PZ.flags.c03 = id; apply(id);
-          if (id === 'swim') {
-            await play(run2, R.swim[0]); sfx('bark'); await UI.wait(run2, TUNE_SEC.BARK_TO_SPLASH_MS);
-            const back = [V.luno.tx, V.luno.ty];
-            V.flam.speed = 0.8; sfx('splash');
-            const go = api.gridPath([V.flam.tx, V.flam.ty], p.sw);   // 水の中を、スイッチまで泳ぐ道（盤面から求める）
-            await api.walkPath(run2, V.flam, go, { swim: true });
-            PZ.flags.swKnown = true; api.fxRing(p.sw[0], p.sw[1], '#a8e4ff'); sfx('lit');
-            await play(run2, R.swim[1]);
-            await api.walkPath(run2, V.flam, go.slice(0, -1).reverse().concat([back]), { swim: true });
-            V.flam.speed = 1;
-            await play(run2, R.swim[2]); UI.sys(P.s2_revealed);
-          } else { await play(run2, R.walk); api.idle(); }
-        },
+          sfx('bark');
+          await UI.wait(run2, TUNE_SEC.BARK_TO_SPLASH_MS);
+          const back = [V.luno.tx, V.luno.ty];
+          V.flam.speed = 0.8; sfx('splash');
+          const go = api.gridPath([V.flam.tx, V.flam.ty], p.sw);
+          await api.walkPath(run2, V.flam, go, { swim: true });
+          PZ.flags.swKnown = true;
+          api.fxRing(p.sw[0], p.sw[1], '#a8e4ff'); sfx('lit');
+          await play(run2, R.swim[1]);
+          await api.walkPath(run2, V.flam, go.slice(0, -1).reverse().concat([back]), { swim: true });
+          V.flam.speed = 1;
+          await play(run2, R.swim[2]); UI.sys(P.s2_revealed);
+        } : null,
         win: async (run2, api) => { sfx('win'); await UI.wait(run2, 350); api.finish(); }
-      });
+      }, { c03: id, swKnown: id === 'swim' });
       setMode('novel');
       await play(run, P.s2_clear);
       return { go: 3 };
     }
 
     // 謎解き：最中の曲に切り替え、終わったら区画の曲に戻す
-    async function puzzle(run, sid, hooks) { const own = sid === 's7'; if (!own) bgm('puzzle'); await Puzzle.start(run, sid, hooks, S.diff); if (!own) bgm('sec' + S.sec); }   // 灯火の間は、区画7の曲のまま謎解きをする
+    async function puzzle(run, sid, hooks, initialFlags) { const own = sid === 's7'; if (!own) bgm('puzzle'); await Puzzle.start(run, sid, hooks, S.diff, initialFlags); if (!own) bgm('sec' + S.sec); }   // 灯火の間は、区画7の曲のまま謎解きをする
 
     /* 戦闘のまとめ役（区画3・8）。結果 { type, luHP, flHP, A, … } を返し、HP・不安を引き継ぐ */
     async function fight(run, kind, extra) {

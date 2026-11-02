@@ -11,7 +11,7 @@
     CUT_FADE: 0.25,    // 台詞を送ったときなどに、鳴っている効果音を消していく秒数
     SOLO: { baa: true },   // ここに書いた効果音は、鳴っている間に同じ音を重ねない（鳴り終わってから、次の操作でまた鳴る）
     // 効果音ごとの、鳴らす長さの上限（秒）。長い音がいつまでも続かないように、ここで止める（フェードして消す）。書いていない音は最後まで鳴らす
-    MAX_SEC: { push: 0.9, open: 3.0, crumble: 2.5, item: 2.2, bark: 1.6, heal: 1.6, win: 2.2, glow: 4.5, sad: 4.0, lose: 2.4, splash: 1.3, 'item:hidden': 3.5 }
+    MAX_SEC: { push: 0.9, open: 3.0, crumble: 2.5, item: 2.2, bark: 1.6, 'bark:howl': 3.6, heal: 1.6, win: 2.2, glow: 4.5, sad: 4.0, lose: 2.4, splash: 1.3, 'item:hidden': 3.5 }
   };
 
   let AC = null;

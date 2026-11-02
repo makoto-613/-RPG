@@ -77,3 +77,10 @@ node test/improvement_check.js
 node test/levels_check.js
 node test/rules_node.js
 ```
+
+フラメトの犬の声は `assets/audio/犬の鳴き声1〜4.mp3` を使用します。`audio.js` の `SE.bark` の `pick` は通常、`alt.howl` は遠吠え用です。
+
+## 水門（区画2）の新しい流れ
+区画2の選択肢は、`sections.js` の `sec2` で水路へ入った際、謎解き画面を表示する前に尋ねます。選択肢は `rules.js` の `swim`／`walk` です。
+水たまり `Q` は通行可能な装飾マスで、再度の選択肢は出ません。隠しスイッチの光は `render.js` の `drawS2` で調整できます。
+原稿の管理情報 `p`／`src` は編集用に残しますが、ゲーム画面上は表示しません。
