@@ -1,0 +1,8 @@
+# 整形しないもの
+dist/
+assets/
+# 道具（tools/）が文字の並びを読んで書き換えるファイル・自動で作るファイルは、今の書き方のまま
+js/data/atlas.js
+js/data/story.js
+js/data/rules.js
+js/data/audio.js
