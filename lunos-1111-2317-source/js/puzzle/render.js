@@ -201,7 +201,7 @@
               ctx.fillStyle = 'rgba(58,21,29,.12)';
               ctx.fillRect(px + 1, py + 1, T - 2, T - 2);
               ctx.fillStyle = 'rgba(255,161,143,.65)';
-              ctx.font = '700 ' + Math.max(9, Math.round(T * 0.21)) + 'px sans-serif';
+              ctx.font = '700 ' + Math.max(9, Math.round(T * 0.21)) + 'px "Zen Maru Gothic",sans-serif';
               ctx.textAlign = 'right';
               ctx.textBaseline = 'top';
               ctx.fillText('×', px + T * 0.9, py + T * 0.05);
