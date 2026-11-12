@@ -59,7 +59,8 @@ tools/          スプレッドシートとのやり取りの道具
 | `js/battle/battle_rules.js` | 戦闘の数値とルール・敵とフラメトの動き（画面に依存しない） |
 | `js/battle/battle.js` | 戦闘の画面 |
 | `js/system/sections.js` | 序章と区画の流れ（中の番号は1・3〜10。区画2は11月11日に削除。画面では区画1〜9と表示） |
-| `js/system/game.js` | ゲーム全体の土台：状態・台詞の再生・タイマー・結末・保存・メニュー |
+| `js/system/dialogs.js` | ダイアログの中身（メニュー・確認・羊追いの結果・戦い方の説明）の文と並び |
+| `js/system/game.js` | ゲーム全体の土台：状態・台詞の再生・タイマー・結末・保存・メニューのボタンの動き |
 | `src/index.html` | 画面の HTML（見た目とプログラムは build.js が差し込む） |
 | `src/style.css` | 画面の見た目（CSS） |
 
@@ -86,11 +87,12 @@ tools/          スプレッドシートとのやり取りの道具
 | `export_lines.js` | ゲームの中の文を一覧にして出す（セリフ集のシートを作り直すとき） |
 | `export_stage.js` | 場面の背景・小物・立ち位置を一覧にして出す（場面と配置のシート用） |
 | `apply_sheet.py` | セリフ集のシートを xlsx で書き出したものから、「修正後」の文を story.js・rules.js に戻す |
+| `scenes.js` | 場面の名前の一覧（`export_lines.js`・`export_stage.js` が使う） |
 | `audio_from_dump.py` | 音のシートを書き出したテキストから、audio.js を作り直す（場面の ID は audio.js にあるもの） |
 
 ## テスト（test/）
 
-`run_all.js` がまとめて動かします。ほかに、作り直す前と後の見た目を比べる道具があります。
+`run_all.js` がまとめて動かします。ブラウザを開く・ページを開く・台詞を進めるなどの共通の部分は `lib.js` にあります。ほかに、作り直す前と後の見た目を比べる道具があります。
 
 - `snapshot.js` と `snapcmp.py`：時間と乱数を止めて、物語の全場面・謎解き・戦闘を撮り、前と後を比べる（`node test/snapshot.js 出力先` → `python3 test/snapcmp.py 前 後`）
 

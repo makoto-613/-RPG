@@ -1,0 +1,23 @@
+[
+"@media (min-width: 900px) :: .play[data-mode='puzzle'] .tut, .play[data-mode='puzzle'] .tut.top, .play[data-mode='battle'] .tut, .play[data-mode='battle'] .tut.top",
+" :: :root",
+" :: .play[data-mode='novel']",
+" :: .msg",
+" :: .play[data-mode='novel'] .toasts",
+" :: .play[data-mode='puzzle'] .msg",
+" :: .play[data-mode='puzzle'] .choices",
+" :: .play[data-mode='puzzle'] .pad",
+" :: .play[data-mode='puzzle'] .acts .kbtn",
+" :: .play[data-mode='puzzle'] .chips",
+" :: .play[data-mode='puzzle'] .chips .chip",
+" :: .play[data-mode='battle'] .msg",
+" :: .play[data-mode='battle'] .cmd",
+" :: #scr-title .t-over.gut",
+" :: #scr-title .t-logo",
+" :: #scr-title .t-logo .emb",
+" :: #scr-title .t-logo h1",
+" :: #scr-title .t-logo .t-sub",
+" :: #scr-title .t-menu",
+" :: #scr-title .t-warn",
+" :: #scr-title .t-ends"
+]
