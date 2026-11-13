@@ -313,8 +313,7 @@
             sh.tx = e.to[0];
             sh.ty = e.to[1];
           }
-          sfx('push');
-          sfx('baa');
+          sfx('baa'); // 羊を押したときは、引きずる音ではなく羊の鳴き声だけ
         } else if (e.t === 'pen') {
           if (sh) {
             sh.tx = e.to[0];

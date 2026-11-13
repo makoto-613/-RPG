@@ -239,7 +239,7 @@ window.AUDIO = {
     "犬の鳴き声3.mp3",
     "犬の鳴き声4.mp3"
    ],
-   "alt": { "howl": "犬の鳴き声2.mp3" }
+   "alt": { "howl": "犬の鳴き声2.mp3", "one": "犬の鳴き声1.mp3" }
   },
   "crumble": {
    "file": "ゴゴゴゴ.mp3",
